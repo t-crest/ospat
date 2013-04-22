@@ -1,0 +1,6 @@
+*.o
+*.lo
+*.bc
+*.a
+.depend
+.depend.mk
