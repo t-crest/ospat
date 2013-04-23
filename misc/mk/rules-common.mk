@@ -13,6 +13,43 @@ GNATMAKE=$(GNATMAKE_$(ARCH))
 
 CFLAGS+=-D__POK_C__
 
+# Clang compiler deletes unreferenced symbols during compilation
+# -Wl,-internalize-public-api-list tells the compiler not to delete symbols
+# TODO: try to use __attribute__((used)) to mark functions and variables
+
+ifeq ($(ARCH), patmos)
+LDFLAGS	= 	-Wl,-internalize-public-api-list=pok_update_tick \
+			-Wl,-internalize-public-api-list=pok_current_partition \
+			-Wl,-internalize-public-api-list=pok_partitions \
+			-Wl,-internalize-public-api-list=current_thread \
+			-Wl,-internalize-public-api-list=pok_core_syscall \
+			-Wl,-internalize-public-api-list=pok_arch_decr_int \
+			-Wl,-internalize-public-api-list=pok_current_context \
+			-Wl,-internalize-public-api-list=context_switch \
+			-Wl,-internalize-public-api-list=pok_arch_sc_int \
+			-Wl,-internalize-public-api-list=pok_boot \
+			-Wl,-internalize-public-api-list=pok_sched \
+			-Wl,-internalize-public-api-list=pok_tick_counter \
+			-Wl,-internalize-public-api-list=pok_arch_preempt_enable \
+			-Wl,-internalize-public-api-list=pok_bsp_time_init \
+			-Wl,-internalize-public-api-list=pok_context_create \
+			-Wl,-internalize-public-api-list=pok_arch_idle \
+			-Wl,-internalize-public-api-list=pok_create_space \
+			-Wl,-internalize-public-api-list=pok_bsp_mem_alloc \
+			-Wl,-internalize-public-api-list=pok_arch_init \
+			-Wl,-internalize-public-api-list=pok_arch_set_decr \
+			-Wl,-internalize-public-api-list=next_timer \
+			-Wl,-internalize-public-api-list=time_inter \
+			-Wl,-internalize-public-api-list=get_patmos_tb \
+			-Wl,-internalize-public-api-list=pok_space_context_create \
+			-Wl,-internalize-public-api-list=pok_thread_stack_addr\
+			-Wl,-internalize-public-api-list=pok_thread_shadow_stack_addr\
+			-Wl,-internalize-public-api-list=pok_cons_write \
+			-Wl,-internalize-public-api-list=restore_context \
+			-Wl,-internalize-public-api-list=pok_thread_start_execution \
+			-Wl,-internalize-public-api-list=pok_sched_end_period 
+endif
+
 ifneq ($(XCOV),) 
 CFLAGS+=-DPOK_NEEDS_COVERAGE_INFOS
 endif

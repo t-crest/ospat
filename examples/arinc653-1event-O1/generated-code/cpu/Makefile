@@ -18,9 +18,32 @@ export PARTITIONS_ADDR=`awk '{if ($$2 == "POK_CONFIG_PARTITIONS_LOADADDR") print
 KERNEL=kernel/kernel.lo
 all: build-lds build-kernel partitions $(TARGET)
 
+ifeq ($(ARCH), patmos)
+# In Patmos we only need one linker script
+build-lds: kernel-lds
+else
 build-lds: kernel-lds	partitions-lds
+endif
 
 kernel-lds:  
+# Handle Patmos linker script
+ifeq ($(ARCH), patmos)
+	$(ECHO) "Patmos all in one compilation"
+	cp $(POK_PATH)/misc/ldscripts/$(ARCH)/$(BSP)/kernel_preamble.lds $(POK_PATH)/misc/ldscripts/$(ARCH)/$(BSP)/kernel_t.lds
+	c=1;for v in $(PARTITIONS_ADDR); do \
+		$(ECHO) "Base address" $$v "-" $$c ": in kernel.lds" ; \
+		$(ECHO) "   . = $$v; " >> $(POK_PATH)/misc/ldscripts/$(ARCH)/$(BSP)/kernel_t.lds; \
+		$(ECHO) "   .part$$c :  " >> $(POK_PATH)/misc/ldscripts/$(ARCH)/$(BSP)/kernel_t.lds; \
+		$(ECHO) "   { " >> $(POK_PATH)/misc/ldscripts/$(ARCH)/$(BSP)/kernel_t.lds; \
+		$(ECHO) "       part$$c.elf(.text) " >> $(POK_PATH)/misc/ldscripts/$(ARCH)/$(BSP)/kernel_t.lds; \
+		$(ECHO) "   } " >> $(POK_PATH)/misc/ldscripts/$(ARCH)/$(BSP)/kernel_t.lds; \
+		$(ECHO) " " >> $(POK_PATH)/misc/ldscripts/$(ARCH)/$(BSP)/kernel_t.lds; \
+		c=`$(ECHO) $${c}+1 | bc` ; \
+	done
+	cat $(POK_PATH)/misc/ldscripts/$(ARCH)/$(BSP)/kernel_t.lds $(POK_PATH)/misc/ldscripts/$(ARCH)/$(BSP)/kernel_postscript.lds > $(POK_PATH)/misc/ldscripts/$(ARCH)/$(BSP)/kernel.lds ; \
+  	cp $(POK_PATH)/misc/ldscripts/$(ARCH)/$(BSP)/kernel.lds ./kernel/kernel.lds ; \
+	rm -f $(POK_PATH)/misc/ldscripts/$(ARCH)/$(BSP)/kernel_t.lds 
+else
 # Handle kernel linker script
 ifeq ($(shell grep -i POK_NEEDS_QEMU_SETUP $(HEADERFILE)|grep -v "/"),)
 	$(ECHO) "PRAORTIS SIM setup $(ARCH)"
@@ -33,6 +56,7 @@ else
 	cp $(POK_PATH)/misc/ldscripts/$(ARCH)/$(BSP)/QEMU/kernel_postscript.lds $(POK_PATH)/misc/ldscripts/$(ARCH)/$(BSP)/kernel_postscript.lds 
 	sed s/placeholder/0xFFF00000/ $(POK_PATH)/misc/ldscripts/$(ARCH)/$(BSP)/kernel_template.lds > $(POK_PATH)/misc/ldscripts/$(ARCH)/$(BSP)/kernel.lds 
 endif
+
 ifeq ($(shell grep -i POK_SKIP_LOADER $(HEADERFILE)|grep -v "/"),)
 	$(ECHO) "Using DEFAULT Base physical addresses"
 #	cp $(POK_PATH)/misc/ldscripts/$(ARCH)/$(BSP)/kernel_template.lds $(POK_PATH)/misc/ldscripts/$(ARCH)/$(BSP)/kernel_t.lds 
@@ -43,7 +67,7 @@ else
 	$(ECHO) "Base physical addresses"
 	cp $(POK_PATH)/misc/ldscripts/$(ARCH)/$(BSP)/kernel_preamble.lds $(POK_PATH)/misc/ldscripts/$(ARCH)/$(BSP)/kernel_t.lds
 	c=1;for v in $(PARTITIONS_ADDR); do \
-$(ECHO) "Base address" $$v "-" $$c ": in kernel.lds" ; \
+		$(ECHO) "Base dfd address" $$v "-" $$c ": in kernel.lds" ; \
 		$(ECHO) "   . = $$v; " >> $(POK_PATH)/misc/ldscripts/$(ARCH)/$(BSP)/kernel_t.lds; \
 		$(ECHO) "   .part$$c :  " >> $(POK_PATH)/misc/ldscripts/$(ARCH)/$(BSP)/kernel_t.lds; \
 		$(ECHO) "   { " >> $(POK_PATH)/misc/ldscripts/$(ARCH)/$(BSP)/kernel_t.lds; \
@@ -53,9 +77,11 @@ $(ECHO) "Base address" $$v "-" $$c ": in kernel.lds" ; \
 		c=`$(ECHO) $${c}+1 | bc` ; \
 	done
 	cat $(POK_PATH)/misc/ldscripts/$(ARCH)/$(BSP)/kernel_t.lds $(POK_PATH)/misc/ldscripts/$(ARCH)/$(BSP)/kernel_postscript.lds > $(POK_PATH)/misc/ldscripts/$(ARCH)/$(BSP)/kernel.lds ; \
-  cp $(POK_PATH)/misc/ldscripts/$(ARCH)/$(BSP)/kernel.lds ./kernel/kernel.lds ; \
+  	cp $(POK_PATH)/misc/ldscripts/$(ARCH)/$(BSP)/kernel.lds ./kernel/kernel.lds ; \
 	rm -f $(POK_PATH)/misc/ldscripts/$(ARCH)/$(BSP)/kernel_t.lds 
 endif
+endif
+
 partitions-lds:
 # Handle partitions linker scripts
 ifeq ($(shell grep -i POK_SKIP_LOADER $(HEADERFILE)|grep -v "/"),)
