@@ -3,15 +3,16 @@
 DD=/bin/dd
 
 ifeq ($(ARCH),patmos) 
-LDOPTS=-T $(POK_PATH)/misc/ldscripts/$(ARCH)/$(BSP)/kernel.lds -o $@ $(POK_PATH)/kernel/pok.lo 
 
+LDOPTS=-Xgold -T -Xgold $(POK_PATH)/misc/ldscripts/$(ARCH)/$(BSP)/kernel.lds -o $@ $(POK_PATH)/kernel/pok.lo 
 
 $(TARGET):
+	$(ECHO) "Building .elf file"
 	$(LD) -nostartfiles $(LDFLAGS) -f $(LDOPTS) $(OBJS)
 
 else
 
-LDOPTS=-Xgold -T -Xgold $(POK_PATH)/misc/ldscripts/$(ARCH)/$(BSP)/kernel.lds -o $@ $(POK_PATH)/kernel/pok.lo 
+LDOPTS=-T $(POK_PATH)/misc/ldscripts/$(ARCH)/$(BSP)/kernel.lds -o $@ $(POK_PATH)/kernel/pok.lo 
 
 assemble-partitions:
 	$(ECHO) $(ECHO_FLAGS) $(ECHO_FLAGS_ONELINE) "[BIN] partitions.bin"
