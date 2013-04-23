@@ -81,36 +81,48 @@ _pok_clear_bss:
 				li $r3 					= __sbss_start
 				li $r5 					= __sbss_end
 				cmplt $p1				= $r3, $r5
-		(!$p1) 	br 2
-	1:			swm	[$r3] 				= $r0
+		(!$p1) 	br .Ltmp22
+				nop
+				nop
+	.Ltmp21:	swm	[$r3] 				= $r0
 				add $r3					= $r3, 4
 				cmplt $p1				= $r3, $r5
-		($p1) 	br 1
-	2:			li $r3 					= __sbss2_start
+		($p1) 	br .Ltmp21
+				nop
+				nop
+	.Ltmp22:	li $r3 					= __sbss2_start
 				li $r5 					= __sbss2_end
 				cmplt $p1				= $r3, $r5
-		(!$p1) 	br 4
-	3: 			swm	[$r3]	 			= $r0
+		(!$p1) 	br .Ltmp24
+				nop
+				nop
+	.Ltmp23:	swm	[$r3]	 			= $r0
 				add $r3 				= $r3, 4
 				cmplt 	$p1				= $r3, $r5
-		($p1) 	br 3
-	4:			li $r3 					= __bss_start
+		($p1) 	br .Ltmp23
+				nop	
+				nop
+	.Ltmp24:			li $r3 					= __bss_start
 				li $r5 					= __bss_end
 				cmplt $p1				= $r3, $r5
-		(!$p1) 	br 6
-	5:			swm	[$r3] 				= $r0
+		(!$p1) 	br .Ltmp26
+				nop	
+				nop
+	.Ltmp25:	swm	[$r3] 				= $r0
 				add $r3 				= $r3, 4
 				cmplt $p1				= $r3, $r5
-		($p1)	br 5
-	6:			
-
-				call 					pok_boot
+		($p1)	br .Ltmp25
+				nop
+				nop
+	.Ltmp26:	// TODO: change to call, figure out why does not work
+				brcf 					pok_boot
 				li $r30					= _pok_clear_bss
 				nop
 
-	.Ltmp5: 	// Loop forever if we get here
-				br						.Ltmp5	
-
+	.Ltmp27: 	// Loop forever if we get here
+				br						.Ltmp27
+				nop
+				nop
 	
 .Ltmp12:
 
