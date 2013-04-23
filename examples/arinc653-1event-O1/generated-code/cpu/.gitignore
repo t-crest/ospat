@@ -1,0 +1,6 @@
+*.o
+*.lo
+*.bc
+*.elf
+*.lds
+.depend
