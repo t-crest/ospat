@@ -57,7 +57,7 @@ restore_context:
 		// Reset r0 to 0
 		and 	$r0				= $r0, 0x0
 
-		li		$r1				= current_context	
+		li		$r1				= pok_current_context	
 
 		lwc  	$r2 			= [$r1 + 1]
 		lwc  	$r3 			= [$r1 + 2]

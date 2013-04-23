@@ -100,7 +100,7 @@ pok_ret_t pok_create_space (uint8_t partition_id,
 	return (POK_ERRNO_OK);
 }
 
-extern void pok_arch_rfi (void);
+extern void restore_context (void);
 
 // Return from interrupt procedure, restores 
 // the context. Defined in entry.S (assembly)
@@ -140,7 +140,7 @@ uint32_t pok_space_context_create (uint8_t partition_id,
   ctx->s6     = (uint32_t) stack_rel;
 
   // Return address
-  ctx->r30    = (uint32_t) pok_arch_rfi;
+  ctx->r30    = (uint32_t) restore_context;
 
   // Return from interrupt address (entry point of the thread)
   ctx->s9     = (uint32_t) entry_rel;

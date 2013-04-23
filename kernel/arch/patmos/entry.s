@@ -127,7 +127,7 @@ _interval_ISR:
 		// Bootstrap context switch saving $r1 in the shadow stack
 		sub		$r29			= $r29, 4
 		swm		[$r29 + 0]		= $r1
-		li		$r1				= current_context	
+		li		$r1				= pok_current_context	
 		
 		// Store general purpose registers
 		swm  	[$r1 + 1] 		= $r2
@@ -239,7 +239,7 @@ system_call:
 		// Bootstrap context switch saving $r1 in the shadow stack
 		sub		$r29			= $r29, 4
 		swm		[$r29 + 0]		= $r1
-		li		$r1				= current_context	
+		li		$r1				= pok_current_context	
 		
 		// Store general purpose registers
 		swm  	[$r1 + 1] 		= $r2
