@@ -51,8 +51,9 @@
 
 #include <bsp.h>
 #include <types.h>
-#include <libc.h>
 
+
+#include <libc.h>
 #include <errno.h>
 #include <core/debug.h>
 #include <core/sched.h>
@@ -75,6 +76,7 @@ pok_ret_t pok_core_syscall (	const pok_syscall_id_t		 syscall_id,
 #if defined (POK_NEEDS_CONSOLE) || defined (POK_NEEDS_DEBUG) 
 		 case POK_SYSCALL_CONSWRITE:
 			POK_CHECK_PTR_OR_RETURN(infos->partition, args->arg1 + infos->base_addr)
+
 			if (pok_cons_write ((const char*)args->arg1 + infos->base_addr, args->arg2))
 			{
 				return POK_ERRNO_OK;

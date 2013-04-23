@@ -50,8 +50,9 @@
 
 
 #include <dependencies.h>
-#include <errno.h>
 #include <arch.h>
+
+#include <stdio.h>
 
 // defined in a load script
 extern char _end[];
@@ -65,4 +66,15 @@ void *pok_bsp_mem_alloc (size_t sz)
   res = (char *)(((unsigned int)heap_end + 4095) & ~4095);
   heap_end = res + sz;
   return res;
+}
+
+pok_bool_t pok_cons_write (const char *s, size_t length)
+{
+	for (size_t i = 0; i < length; i++)
+	{
+		char c = s[i];
+		c = 'c';
+	}
+	//	if (printf("%c", s[i])==0) return 0;
+	return length;
 }
