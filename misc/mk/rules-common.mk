@@ -13,45 +13,6 @@ GNATMAKE=$(GNATMAKE_$(ARCH))
 
 CFLAGS+=-D__POK_C__
 
-# Clang compiler deletes unreferenced symbols during compilation
-# -Wl,-internalize-public-api-list tells the compiler not to delete symbols
-# TODO: try to use __attribute__((used)) to mark functions and variables
-
-ifeq ($(ARCH), patmos)
-# LDFLAGS	= 	-Xopt -internalize-public-api-list=pok_update_tick \
-# 			-Xopt -internalize-public-api-list=pok_current_partition \
-# 			-Xopt -internalize-public-api-list=pok_partitions \
-# 			-Xopt -internalize-public-api-list=current_thread \
-# 			-Xopt -internalize-public-api-list=pok_core_syscall \
-# 			-Xopt -internalize-public-api-list=pok_arch_decr_int \
-# 			-Xopt -internalize-public-api-list=pok_current_context \
-# 			-Xopt -internalize-public-api-list=context_switch \
-# 			-Xopt -internalize-public-api-list=pok_arch_sc_int \
-# 			-Xopt -internalize-public-api-list=pok_boot \
-# 			-Xopt -internalize-public-api-list=pok_sched \
-# 			-Xopt -internalize-public-api-list=pok_tick_counter \
-# 			-Xopt -internalize-public-api-list=pok_arch_preempt_enable \
-# 			-Xopt -internalize-public-api-list=pok_bsp_time_init \
-# 			-Xopt -internalize-public-api-list=pok_context_create \
-# 			-Xopt -internalize-public-api-list=pok_arch_idle \
-# 			-Xopt -internalize-public-api-list=pok_create_space \
-# 			-Xopt -internalize-public-api-list=pok_bsp_mem_alloc \
-# 			-Xopt -internalize-public-api-list=pok_arch_init \
-# 			-Xopt -internalize-public-api-list=pok_arch_set_decr \
-# 			-Xopt -internalize-public-api-list=next_timer \
-# 			-Xopt -internalize-public-api-list=time_inter \
-# 			-Xopt -internalize-public-api-list=get_patmos_tb \
-# 			-Xopt -internalize-public-api-list=pok_space_context_create \
-# 			-Xopt -internalize-public-api-list=pok_thread_stack_addr\
-# 			-Xopt -internalize-public-api-list=pok_thread_shadow_stack_addr\
-# 			-Xopt -internalize-public-api-list=pok_cons_write \
-# 			-Xopt -internalize-public-api-list=restore_context \
-# 			-Xopt -internalize-public-api-list=pok_thread_start_execution \
-# 			-Xopt -internalize-public-api-list=pok_sched_end_period \
-# 			-Xopt -internalize-public-api-list=_interval_ISR \
-# 			-Xopt -internalize-public-api-list=SET_PARTITION_MODE
-endif
-
 ifneq ($(XCOV),) 
 CFLAGS+=-DPOK_NEEDS_COVERAGE_INFOS
 endif
