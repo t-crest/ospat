@@ -58,10 +58,7 @@
 #include <errno.h>
 #include <core/partition.h>
 #include <core/time.h>
- #include <core/thread.h>
-#ifdef POK_NEEDS_DEBUG
-	#include <libc.h>
-#endif 
+#include <core/thread.h>
 
 #include "rtc.h"
 
@@ -96,7 +93,7 @@ pok_ret_t pok_arch_init ()
 {
 	// Register _interval_ISR function as interrupt service routine
 	// for timer interrupt
-	__PATMOS_RTC_WR_ISR(_interval_ISR)
+	__PATMOS_RTC_WR_ISR((unsigned int)_interval_ISR)
 
 	return POK_ERRNO_OK;
 }

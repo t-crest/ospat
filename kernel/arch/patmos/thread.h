@@ -56,8 +56,7 @@
 	#include <libc.h>
 #endif 
 
-#define JMP_BUF_OFFSET 76
-#define PATMOS_CONTEXT_SIZE 188
+#define PATMOS_CONTEXT_SIZE 192
 
 /* Non-volatile context modified to accomodate FP registers
 *  This context has the same structure as jmp_buf defined in
@@ -121,6 +120,8 @@ typedef struct
 	uint32_t s13;	/*	176	*/
 	uint32_t s14;
 	uint32_t s15;	/*	184	*/
+
+	uint32_t ssize; /*	188	*/
 
 } context_t;
 

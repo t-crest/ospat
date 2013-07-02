@@ -78,7 +78,12 @@
 
 #include <dependencies.h>
 
+#ifdef POK_ARCH_PATMOS
+#include <stdio.h>
+#else
 #include <libc.h>
+#endif
+
 #include <core/debug.h>
 #include <core/error.h>
 #include <arch.h>
@@ -722,8 +727,13 @@ void pok_sched_context_switch (const uint32_t elected_id)
 	if (POK_SCHED_CURRENT_THREAD == elected_id)
 	{ 
 #ifdef POK_NEEDS_DEBUG
-         printf("<=> NO switch from thread %d, sp=0x%x\n",POK_SCHED_CURRENT_THREAD, current_sp);
-         printf("<=> NO switch to thread %d, sp=0x%x\n",elected_id, new_sp);
+		#ifndef POK_ARCH_PATMOS
+        printf("<=> NO switch from thread %d, sp=0x%x\n",POK_SCHED_CURRENT_THREAD, current_sp);
+        printf("<=> NO switch to thread %d, sp=0x%x\n",elected_id, new_sp);
+        #else
+        printf("<=> NO switch from thread %d\n", POK_SCHED_CURRENT_THREAD);
+        printf("<=> NO switch to thread %d\n", elected_id);
+        #endif
 #endif
 		return;
 	}
@@ -731,8 +741,13 @@ void pok_sched_context_switch (const uint32_t elected_id)
 
 	/*  FIXME : current debug session about exceptions-handled */
 #ifdef POK_NEEDS_DEBUG
-	 printf("switch from thread %d, sp=0x%x\n",POK_SCHED_CURRENT_THREAD, current_sp);
-	 printf("switch to thread %d, sp=0x%x entry point = 0x%x\n",elected_id, new_sp, pok_threads[elected_id].entry);
+	#ifndef POK_ARCH_PATMOS
+	printf("switch from thread %d, sp=0x%x\n",POK_SCHED_CURRENT_THREAD, current_sp);
+	printf("switch to thread %d, sp=0x%x entry point = 0x%x\n",elected_id, new_sp, pok_threads[elected_id].entry);
+    #else
+    printf("switch from thread %d\n", POK_SCHED_CURRENT_THREAD);
+    printf("switch to thread %d\n", elected_id);
+    #endif
 #endif	 
 	// Update current thread id now 
 	current_thread 		= elected_id;
@@ -764,17 +779,27 @@ void pok_sched_partition_switch (const uint32_t elected_id)
 	if (POK_SCHED_CURRENT_THREAD == elected_id)
 	{	
 #ifdef POK_NEEDS_DEBUG
-		printf("<=> NO switch from thread %d, sp=0x%x\n",POK_SCHED_CURRENT_THREAD, current_sp);
-		printf("<=> NO switch to thread %d, sp=0x%x\n",elected_id, new_sp);
+		#ifndef POK_ARCH_PATMOS
+        printf("<=> NO switch from thread %d, sp=0x%x\n",POK_SCHED_CURRENT_THREAD, current_sp);
+        printf("<=> NO switch to thread %d, sp=0x%x\n",elected_id, new_sp);
+        #else
+        printf("<=> NO switch from thread %d\n", POK_SCHED_CURRENT_THREAD);
+        printf("<=> NO switch to thread %d\n", elected_id);
+        #endif
 #endif
 		return;
 	}
 					
 	/* FIXME : current debug session about exceptions-handled */
 #ifdef POK_NEEDS_DEBUG
+	#ifndef POK_ARCH_PATMOS
 	printf("switch from thread %d, sp=0x%x\n",POK_SCHED_CURRENT_THREAD, current_sp);
-	printf("switch to thread %d, sp=0x%x, entry point = 0x%x\n",elected_id, new_sp, pok_threads[elected_id].entry);
-#endif	 
+	printf("switch to thread %d, sp=0x%x entry point = 0x%x\n",elected_id, new_sp, pok_threads[elected_id].entry);
+    #else
+    printf("switch from thread %d\n", POK_SCHED_CURRENT_THREAD);
+    printf("switch to thread %d\n", elected_id);
+    #endif
+#endif	
 	
 #ifdef POK_ARCH_PPC
 	// Switch from one partition to another	
@@ -986,7 +1011,7 @@ pok_ret_t pok_sched_end_period ()
 		// deadline time = next release point + time capacity
 		POK_CURRENT_THREAD.end_time = POK_CURRENT_THREAD.next_activation + POK_CURRENT_THREAD.time_capacity;
 #ifdef POK_NEEDS_DEBUG
-		printf("DEBUG::Activation of thread %d updated to ",POK_SCHED_CURRENT_THREAD);print_long(POK_CURRENT_THREAD.next_activation);printf("\n");
+		printf("DEBUG::Activation of thread %d updated to %lld\n",POK_SCHED_CURRENT_THREAD, POK_CURRENT_THREAD.next_activation);
 #endif
 #if POK_NEEDS_SCHED_O1
 		// set up new timer for next activation in case of DELAYED_START

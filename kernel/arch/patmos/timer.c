@@ -54,7 +54,7 @@
 #include <core/time.h>
 #include <core/sched.h>
 #include <dependencies.h>
-#include <libc.h>
+#include <stdio.h>
 #include <bsp.h>
 
 #include "rtc.h"
@@ -125,11 +125,10 @@ int pok_arch_set_decr (unsigned int timer)
 	int delta = time_new - time_cur;
 	
 	#ifdef POK_NEEDS_DEBUG
-	printf("TIME LAST: ");
-	print_long(time_last);
-	printf(", TIMER: %u, TIME NEW: ",timer);
-	print_long(time_new);printf(", TIME CUR: ");
-	print_long(time_cur);printf(", DELTA: %d\n",delta);
+	printf("TIME LAST: %lld", time_last);
+	printf(", TIMER: %u, TIME NEW: %lld",timer,time_new);
+	printf(", TIME CUR: %lld", time_new);
+	printf(", DELTA: %d\n",delta);
 	#endif
 	last_patmos_tb = time_last;
 	time_last = time_new;

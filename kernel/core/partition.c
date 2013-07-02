@@ -71,8 +71,12 @@
 #include <core/loader.h>
 #include <core/partition.h>
 
- #if defined (POK_NEEDS_CONSOLE) || defined (POK_NEEDS_DEBUG) 
-	#include <libc.h>
+#if defined (POK_NEEDS_CONSOLE) || defined (POK_NEEDS_DEBUG) 
+#ifdef POK_ARCH_PATMOS
+#include <stdio.h>
+#else
+#include <libc.h>
+#endif
 #endif
 
 #ifdef POK_NEEDS_SCHED_FPPS
@@ -190,8 +194,9 @@ pok_ret_t pok_partition_init ()
 {
 	uint8_t     i;
 	uint32_t    threads_index = 0;
-
+#ifndef POK_ARCH_PATMOS
 	const uint32_t	partition_size[POK_CONFIG_NB_PARTITIONS] = POK_CONFIG_PARTITIONS_SIZE;
+#endif
 #if defined (POK_CONFIG_PARTITIONS_LOADADDR) && defined (POK_SKIP_LOADER)
 	const uint32_t	program_loadaddr[POK_CONFIG_NB_PARTITIONS] = POK_CONFIG_PARTITIONS_LOADADDR;
 #endif
@@ -202,40 +207,46 @@ pok_ret_t pok_partition_init ()
 
 	for (i = 0 ; i < POK_CONFIG_NB_PARTITIONS ; i++)
 	{
+#ifdef POK_ARCH_PPC
 		uint32_t size = partition_size[i];
 		uint32_t base_addr = (uint32_t)pok_bsp_mem_alloc(partition_size[i]);
-		uint32_t program_entry;
-
-		#ifndef		POK_ARCH_PATMOS
 		uint32_t base_vaddr           = pok_space_base_vaddr(base_addr);
-		#endif		/* POK_ARCH_PATMOS */
+#endif
+		uint32_t program_entry = 0;
 
 #if defined (POK_CONFIG_PARTITIONS_LOADADDR) && defined (POK_SKIP_LOADER)
+		&& defined (POK_ARCH_PPC)
 		// One may want to check that consistent addresses were specified
 		printf ("Partition base addr phys=|%x| (user-defined |%x|)",base_addr, program_loadaddr[i]);
 #endif
+#ifdef POK_ARCH_PPC		
 		pok_partitions[i].base_addr   = base_addr;
 		pok_partitions[i].size        = size;
+#else
+		pok_partitions[i].base_addr   = 0;
+		pok_partitions[i].size        = 0;
+#endif
+
 		pok_partitions[i].sched       = POK_SCHED_RR;
-		pok_partitions[i].partition_id = i;     
+		pok_partitions[i].partition_id = i;  
+
 #ifdef POK_NEEDS_DEBUG
 #ifdef POK_ARCH_PPC
 		printf ("[XCOV] Partition %d loaded at addr virt=|%x|, phys=|%x|\n", i, base_vaddr, base_addr);
 #else
-		printf ("[XCOV] Partition %d loaded at addr phys=|%x|\n", i, base_addr);
+		printf ("[XCOV] Partition %d loaded", i);
 #endif	
 #endif
 
 		pok_partition_setup_scheduler (i);
 
+#ifndef		POK_ARCH_PATMOS
 		pok_create_space (i, base_addr, size);
-
-		#ifndef		POK_ARCH_PATMOS
 		pok_partitions[i].base_vaddr = base_vaddr;
-		#endif		/* POK_ARCH_PATMOS */
+#endif		/* POK_ARCH_PATMOS */
 
 		/* Set the memory space and so on */
-      		pok_partitions[i].thread_index_low    = threads_index;
+      	pok_partitions[i].thread_index_low    = threads_index;
 		pok_partitions[i].nthreads            = ((uint32_t[]) POK_CONFIG_PARTITIONS_NTHREADS) [i];
 
 #ifdef POK_NEEDS_ERROR_HANDLING
@@ -246,7 +257,7 @@ pok_ret_t pok_partition_init ()
 #endif
 
 #ifdef POK_CONFIG_PARTITIONS_SCHEDULER
-      		pok_partitions[i].sched               = ((pok_sched_t[]) POK_CONFIG_PARTITIONS_SCHEDULER) [i];
+      	pok_partitions[i].sched               = ((pok_sched_t[]) POK_CONFIG_PARTITIONS_SCHEDULER) [i];
 #endif
 
 		pok_partitions[i].thread_index_high   = pok_partitions[i].thread_index_low + ((uint32_t[]) POK_CONFIG_PARTITIONS_NTHREADS) [i];
@@ -254,7 +265,7 @@ pok_ret_t pok_partition_init ()
 #ifdef POK_CONFIG_PARTITIONS_PERIOD
 		pok_partitions[i].period = ((uint32_t[]) POK_CONFIG_PARTITIONS_PERIOD[i]);
 #else
-       		pok_partitions[i].period = POK_CONFIG_SCHEDULING_MAJOR_FRAME;
+       	pok_partitions[i].period = POK_CONFIG_SCHEDULING_MAJOR_FRAME;
 #endif
 		pok_partitions[i].thread_index        = 0;
 		pok_partitions[i].thread_main         = 0;
@@ -284,8 +295,13 @@ pok_ret_t pok_partition_init ()
 		printf("loading partition\n");
 #endif
 		/** This invokation worked just because the base_vaddr was always 0 */
-		//pok_loader_load_partition (i, base_addr - base_vaddr, &program_entry);
+		
+#ifdef POK_ARCH_PPC		
 		pok_loader_load_partition (i, base_addr, &program_entry);
+#else
+		pok_loader_load_partition (i, &program_entry);
+#endif
+
 #ifdef POK_NEEDS_DEBUG
 		printf("\t end loading partition\n");
 #endif

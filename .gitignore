@@ -1,2 +1,4 @@
 doc/
 doc/*
+*.txt
+*.log

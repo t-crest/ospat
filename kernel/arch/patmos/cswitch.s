@@ -59,7 +59,6 @@ restore_context:
 
 		li		$r1				= pok_current_context	
 
-		lwc  	$r2 			= [$r1 + 1]
 		lwc  	$r3 			= [$r1 + 2]
 		lwc  	$r4 			= [$r1 + 3]
 		lwc  	$r5 			= [$r1 + 4]
@@ -90,9 +89,12 @@ restore_context:
 		lwc  	$r30 			= [$r1 + 29]
 		lwc  	$r31 			= [$r1 + 30]
 
+		lwm     $r2           	= [$r1 + 48]
+  		sens    $r2
+		lwc  	$r2 			= [$r1 + 1]
 		// Spill everything from the stack cache
-		sres 	0x3FFFF /* MAX_STACK_CACHE_SIZE */
-		sfree 	0x3FFFF /* MAX_STACK_CACHE_SIZE */
+		//sres 	0x3FFFF /* MAX_STACK_CACHE_SIZE */
+		//sfree 	0x3FFFF /* MAX_STACK_CACHE_SIZE */
 
 		lwc  	$r2 			= [$r1 + 31]
 		mts  	$s0 			= $r2
@@ -137,7 +139,6 @@ restore_context:
 		// Restore r1 and r2
 		lwc  	$r2 			= [$r1 + 1]
 		lwc  	$r1 			= [$r1 + 0]
-
-		
+		nop		
 
 .Ltmp3:

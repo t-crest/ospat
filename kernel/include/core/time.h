@@ -104,9 +104,11 @@ extern uint64_t pok_update_tick();
 
 #endif /* end ifdef POK_NEEDS_SCHED_O1 */
 
-typedef int clockid_t;
-
 # define CLOCK_REALTIME 0
+
+#ifndef POK_ARCH_PATMOS
+
+typedef int clockid_t;
 
 typedef long int time_t;
 
@@ -115,6 +117,9 @@ struct timespec
 	 time_t tv_sec;				  /* Seconds.  */
 	 long int tv_nsec;			  /* Nanoseconds.  */
 };
+
+
+#endif
 
 typedef enum
 {

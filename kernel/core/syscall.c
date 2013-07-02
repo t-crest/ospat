@@ -52,8 +52,12 @@
 #include <bsp.h>
 #include <types.h>
 
-
+#ifdef POK_ARCH_PATMOS
+#include <stdio.h>
+#else
 #include <libc.h>
+#endif
+
 #include <errno.h>
 #include <core/debug.h>
 #include <core/sched.h>

@@ -63,6 +63,12 @@ pok_syscall4:
 pok_syscall5:
 pok_syscall6:	
 pok_syscall7:
-		  call system_call
-		  nop
-		  nop
+		//call system_call
+		nop
+		nop
+
+		// We never get there
+		ret	$r30, $r31          
+	    nop	                   
+	    nop
+	    nop

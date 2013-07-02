@@ -48,6 +48,7 @@
  *		POSSIBILITY OF SUCH DAMAGE.
  */
 
+#ifndef 
 #include <arch.h>
 
 void pok_arch_idle (void)

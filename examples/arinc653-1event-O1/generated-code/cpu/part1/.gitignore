@@ -3,4 +3,5 @@
 *.bc
 *.elf
 *.lds
+*.a
 .depend

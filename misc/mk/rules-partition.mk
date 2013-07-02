@@ -20,8 +20,8 @@ ifeq ($(ARCH), patmos)
 # $(@D)/partition_
 $(TARGET): $(OBJS)
 	$(ECHO) $(ECHO_FLAGS) $(ECHO_FLAGS_ONELINE) "[Assemble partition $@ "
-	$(LD) $(LDFLAGS) -fpatmos-link-object -fpatmos-emit-object -o $@ $+ -L$(POK_PATH)/libpok -lpok
-	if test $$? -eq 0; then $(ECHO) $(ECHO_FLAGS) $(ECHO_GREEN) " OK "; else $(ECHO) $(ECHO_FLAGS) $(ECHO_RED) " KO"; fi
+	$(LD) $(LDFLAGS) -o $@ $+ $(POK_PATH)/libpok/libpok.lo
+	if test $$? -eq 0; then $(ECHO) $(ECHO_FLAGS) $(ECHO_GREEN) " OK]"; else $(ECHO) $(ECHO_FLAGS) $(ECHO_RED) " KO]"; fi
 else
 # PWD is the partition subdir
 # $(@D)/partition_

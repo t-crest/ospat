@@ -133,10 +133,9 @@ pok_ret_t	pok_arch_idle ();
 void		pok_context_switch (uint32_t* old_sp, uint32_t new_sp);
 
 
-// Used even in PATMOS
-pok_ret_t	pok_create_space (uint8_t partition_id, uint32_t addr, uint32_t size);
-
 #ifndef POK_ARCH_PATMOS
+
+pok_ret_t	pok_create_space (uint8_t partition_id, uint32_t addr, uint32_t size);
 
 uint32_t	pok_context_create (uint32_t thread_id,
 								uint32_t stack_size,

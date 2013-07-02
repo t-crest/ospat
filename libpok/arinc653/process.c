@@ -51,8 +51,8 @@
 
 #ifdef POK_NEEDS_ARINC653_PROCESS
 
-#include <core/dependencies.h>
 #include <core/thread.h>
+#include <core/dependencies.h>
 #include <arinc653/types.h>
 #include <arinc653/process.h>
 #ifdef POK_ARCH_PPC
@@ -73,6 +73,40 @@ pok_arinc653_threads_name_t 	pok_arinc653_threads_names[POK_CONFIG_NB_THREADS];
 /********************************************************************
 * SERVICE  GET_PROCESS_STATUS
 *********************************************************************/
+#ifdef POK_ARCH_PATMOS
+void GET_PROCESS_STATUS
+		(const PROCESS_ID_TYPE	 	/* in */	PROCESS_ID, 
+		PROCESS_STATUS_TYPE * const	/* out */	PROCESS_STATUS, 
+		RETURN_CODE_TYPE * const  	/* out */	RETURN_CODE) __attribute__((used));
+
+void GET_PROCESS_STATUS
+		(const PROCESS_ID_TYPE	 	/* in */	PROCESS_ID, 
+		PROCESS_STATUS_TYPE * const	/* out */	PROCESS_STATUS, 
+		RETURN_CODE_TYPE * const  	/* out */	RETURN_CODE)
+{
+
+	PROCESS_NAME_TYPE	* name = &((PROCESS_STATUS->ATTRIBUTES).NAME);
+
+	strcpy(*name, pok_arinc653_threads_names[PROCESS_ID]); 	
+
+	(PROCESS_STATUS->ATTRIBUTES).ENTRY_POINT = 0;
+	(PROCESS_STATUS->ATTRIBUTES).STACK_SIZE = 0;
+	(PROCESS_STATUS->ATTRIBUTES).BASE_PRIORITY = FIFO;
+	(PROCESS_STATUS->ATTRIBUTES).PERIOD = 0;
+	(PROCESS_STATUS->ATTRIBUTES).TIME_CAPACITY = 0;
+	(PROCESS_STATUS->ATTRIBUTES).DEADLINE = SOFT;
+
+	PROCESS_STATUS->CURRENT_PRIORITY = 0;
+	(PROCESS_STATUS->DEADLINE_TIME).MSB_TIME = 0;
+	(PROCESS_STATUS->DEADLINE_TIME).LSB_TIME = 0;
+	PROCESS_STATUS->PROCESS_STATE = DORMANT;
+
+	*RETURN_CODE = NO_ERROR;
+
+}
+
+#else
+
 void GET_PROCESS_STATUS
 		(const PROCESS_ID_TYPE	 	/* in */	PROCESS_ID, 
 		PROCESS_STATUS_TYPE * const	/* out */	PROCESS_STATUS, 
@@ -99,9 +133,16 @@ void GET_PROCESS_STATUS
 
 }
 
+#endif
+
 /********************************************************************
 * SERVICE  GET_MY_ID
 *********************************************************************/
+#ifdef POK_ARCH_PATMOS
+void GET_MY_ID (PROCESS_ID_TYPE * const		/* out */	PROCESS_ID, 
+		RETURN_CODE_TYPE * const	/* out */	RETURN_CODE) __attribute__((used));
+#endif
+
 void GET_MY_ID (PROCESS_ID_TYPE * const		/* out */	PROCESS_ID, 
 		RETURN_CODE_TYPE * const	/* out */	RETURN_CODE)
 {
@@ -118,6 +159,13 @@ void GET_MY_ID (PROCESS_ID_TYPE * const		/* out */	PROCESS_ID,
 /********************************************************************
 * SERVICE  GET_PROCESS_ID
 *********************************************************************/
+#ifdef POK_ARCH_PATMOS
+void GET_PROCESS_ID
+		(const PROCESS_NAME_TYPE	/* in */	PROCESS_NAME, 
+		PROCESS_ID_TYPE * const		/* out */	PROCESS_ID, 
+		RETURN_CODE_TYPE * const 	/* out */	RETURN_CODE) __attribute__((used));
+#endif
+
 void GET_PROCESS_ID
 		(const PROCESS_NAME_TYPE	/* in */	PROCESS_NAME, 
 		PROCESS_ID_TYPE * const		/* out */	PROCESS_ID, 
@@ -144,6 +192,54 @@ void GET_PROCESS_ID
 /********************************************************************
 * SERVICE  CREATE_PROCESS
 ********************************************************************/
+#ifdef POK_ARCH_PATMOS
+void CREATE_PROCESS
+		(const PROCESS_ATTRIBUTE_TYPE * const /* Big */	/* in */ATTRIBUTE, 
+		PROCESS_ID_TYPE * const	/* out */		 				PROCESS_ID, 
+		RETURN_CODE_TYPE * const  /* out */		 				RETURN_CODE) __attribute__((used));
+
+void CREATE_PROCESS
+		(const PROCESS_ATTRIBUTE_TYPE * const /* Big */	/* in */ATTRIBUTE, 
+		PROCESS_ID_TYPE * const	/* out */		 				PROCESS_ID, 
+		RETURN_CODE_TYPE * const  /* out */		 				RETURN_CODE)
+{
+	pok_thread_attr_t	core_attr;
+	pok_ret_t			core_ret;
+	uint32_t			core_process_id = 0;
+
+	core_attr.priority		= (uint8_t) ATTRIBUTE->BASE_PRIORITY;
+	core_attr.entry			= ATTRIBUTE->ENTRY_POINT;
+	core_attr.period		= ATTRIBUTE->PERIOD; 
+
+	if ((core_attr.period) != INFINITE_SYSTEM_TIME_VALUE){
+		core_attr.period	= ATTRIBUTE->PERIOD / 10; // expressed in 100 us, converted ms
+	}
+
+	core_attr.deadline = ATTRIBUTE->DEADLINE; 
+	if ((core_attr.deadline) > 0){
+		core_attr.deadline		  = ATTRIBUTE->DEADLINE / 10; 
+	}
+
+	core_attr.time_capacity	= ATTRIBUTE->TIME_CAPACITY;// expressed in 100 us, converted ms
+	
+	if ((core_attr.time_capacity) > 0){
+		core_attr.time_capacity = ATTRIBUTE->TIME_CAPACITY / 10;
+	}
+	core_attr.stack_size		= ATTRIBUTE->STACK_SIZE;
+
+	core_ret = pok_thread_create (&core_process_id, &core_attr);
+
+	*(pok_arinc653_threads_names[core_process_id]) = '\0';
+
+	strcpy(pok_arinc653_threads_names[core_process_id], ATTRIBUTE->NAME);
+
+	*PROCESS_ID = core_process_id;
+
+	*RETURN_CODE = (RETURN_CODE_TYPE) core_ret;
+}
+
+#else
+
 void CREATE_PROCESS
 		(const PROCESS_ATTRIBUTE_TYPE * const /* Big */	/* in */ATTRIBUTE, 
 		PROCESS_ID_TYPE * const	/* out */		 				PROCESS_ID, 
@@ -181,21 +277,30 @@ void CREATE_PROCESS
 
 	*PROCESS_ID = core_process_id;
 
-	*RETURN_CODE = core_ret;
+	*RETURN_CODE = (RETURN_CODE_TYPE) core_ret;
 }
+
+#endif
+
 
 
 
 /********************************************************************
 * SERVICE  STOP
 ********************************************************************/
+#ifdef POK_ARCH_PATMOS
 void STOP (const PROCESS_ID_TYPE	 	/* in */	PROCESS_ID, 
-		 RETURN_CODE_TYPE * const  	/* out */	RETURN_CODE){
+		 RETURN_CODE_TYPE * const  	/* out */	RETURN_CODE) __attribute__((used));
+#endif
+
+void STOP (const PROCESS_ID_TYPE	 	/* in */	PROCESS_ID, 
+		 RETURN_CODE_TYPE * const  	/* out */	RETURN_CODE)
+{
 
 	pok_ret_t		core_ret;
 
 	core_ret		= pok_thread_stop (PROCESS_ID);
-	*RETURN_CODE	= core_ret;
+	*RETURN_CODE = (RETURN_CODE_TYPE) core_ret;
 }
 
 
@@ -203,16 +308,31 @@ void STOP (const PROCESS_ID_TYPE	 	/* in */	PROCESS_ID,
 /********************************************************************
 * SERVICE  START
 ********************************************************************/
+#ifdef POK_ARCH_PATMOS
 void START
 	(const PROCESS_ID_TYPE		/* in */	PROCESS_ID, 
-	RETURN_CODE_TYPE * const	/* out */	RETURN_CODE){
+	RETURN_CODE_TYPE * const	/* out */	RETURN_CODE) __attribute__((used));
+#endif
+
+void START
+	(const PROCESS_ID_TYPE		/* in */	PROCESS_ID, 
+	RETURN_CODE_TYPE * const	/* out */	RETURN_CODE)
+{
 
 	pok_ret_t			core_ret;
 //	printf ("IN START...process id:  %d \n", PROCESS_ID);
 	core_ret = pok_thread_libpok_start (PROCESS_ID);
-	*RETURN_CODE =  core_ret;
+	*RETURN_CODE = (RETURN_CODE_TYPE) core_ret;
 }
 
+/********************************************************************
+* SERVICE  DELAYED_START
+********************************************************************/
+#ifdef POK_ARCH_PATMOS
+void DELAYED_START (PROCESS_ID_TYPE	PROCESS_ID,
+			 SYSTEM_TIME_TYPE  DELAY_TIME,
+			 RETURN_CODE_TYPE  *RETURN_CODE ) __attribute__((used));
+#endif
 
 void DELAYED_START (PROCESS_ID_TYPE	PROCESS_ID,
 			 SYSTEM_TIME_TYPE  DELAY_TIME,
@@ -220,12 +340,16 @@ void DELAYED_START (PROCESS_ID_TYPE	PROCESS_ID,
 {
 	pok_ret_t		core_ret;
 	core_ret 		= pok_thread_libpok_delayed_start (PROCESS_ID, DELAY_TIME);
-	*RETURN_CODE 	= core_ret;
+	*RETURN_CODE = (RETURN_CODE_TYPE) core_ret;
 }
 
 /********************************************************************
 * SERVICE  STOP_SELF
 *********************************************************************/
+#ifdef POK_ARCH_PATMOS
+void STOP_SELF () __attribute__((used));
+#endif
+
 void STOP_SELF ()
 {
 	pok_thread_stop_self();
@@ -234,6 +358,10 @@ void STOP_SELF ()
 /********************************************************************
 * SERVICE  SUSPEND
 *********************************************************************/
+#ifdef POK_ARCH_PATMOS
+void SUSPEND (PROCESS_ID_TYPE	 PROCESS_ID, RETURN_CODE_TYPE	*return_code ) __attribute__((used));
+#endif
+
 void SUSPEND (PROCESS_ID_TYPE	 PROCESS_ID, RETURN_CODE_TYPE	*return_code )
 {
 		pok_ret_t		core_ret;
@@ -245,6 +373,10 @@ void SUSPEND (PROCESS_ID_TYPE	 PROCESS_ID, RETURN_CODE_TYPE	*return_code )
 /********************************************************************
 * SERVICE  SUSPEND_SELF
 *********************************************************************/
+#ifdef POK_ARCH_PATMOS
+void SUSPEND_SELF (SYSTEM_TIME_TYPE time_out, RETURN_CODE_TYPE *return_code ) __attribute__((used));
+#endif
+
 void SUSPEND_SELF (SYSTEM_TIME_TYPE time_out, RETURN_CODE_TYPE *return_code )
 {
 		//pok_ret_t		core_ret;
@@ -257,13 +389,18 @@ void SUSPEND_SELF (SYSTEM_TIME_TYPE time_out, RETURN_CODE_TYPE *return_code )
 /********************************************************************
 * SERVICE  RESUME
 *********************************************************************/
+#ifdef POK_ARCH_PATMOS
+void RESUME (PROCESS_ID_TYPE  /* in*/	PROCESS_ID,
+				 RETURN_CODE_TYPE /*out*/  *RETURN_CODE ) __attribute__((used));
+#endif
+
 void RESUME (PROCESS_ID_TYPE  /* in*/	PROCESS_ID,
 				 RETURN_CODE_TYPE /*out*/  *RETURN_CODE )
 {
 		pok_ret_t	core_ret;	
 /* Implement required checks */
 		core_ret = pok_thread_resume (PROCESS_ID);
-		*RETURN_CODE =  core_ret;
+		*RETURN_CODE = (RETURN_CODE_TYPE) core_ret;
 }
 
 
@@ -271,6 +408,12 @@ void RESUME (PROCESS_ID_TYPE  /* in*/	PROCESS_ID,
 /********************************************************************
 * SERVICE  SET_PRIORITY
 *********************************************************************/
+#ifdef POK_ARCH_PATMOS
+void SET_PRIORITY (PROCESS_ID_TYPE  process_id,
+						 PRIORITY_TYPE	 priority,
+						 RETURN_CODE_TYPE *return_code ) __attribute__((used));
+#endif
+
 void SET_PRIORITY (PROCESS_ID_TYPE  process_id,
 						 PRIORITY_TYPE	 priority,
 						 RETURN_CODE_TYPE *return_code )
@@ -284,6 +427,11 @@ void SET_PRIORITY (PROCESS_ID_TYPE  process_id,
 /********************************************************************
 * SERVICE  LOCK_PREEMPTION
 *********************************************************************/
+#ifdef POK_ARCH_PATMOS
+void LOCK_PREEMPTION (LOCK_LEVEL_TYPE	  *lock_level,
+							 RETURN_CODE_TYPE	 *return_code ) __attribute__((used));
+#endif
+
 void LOCK_PREEMPTION (LOCK_LEVEL_TYPE	  *lock_level,
 							 RETURN_CODE_TYPE	 *return_code )
 {
@@ -294,6 +442,11 @@ void LOCK_PREEMPTION (LOCK_LEVEL_TYPE	  *lock_level,
 /********************************************************************
 * SERVICE  UNLOCK_PREEMPTION
 *********************************************************************/
+#ifdef POK_ARCH_PATMOS
+void UNLOCK_PREEMPTION (LOCK_LEVEL_TYPE	*lock_level,
+								RETURN_CODE_TYPE  *return_code ) __attribute__((used));
+#endif
+
 void UNLOCK_PREEMPTION (LOCK_LEVEL_TYPE	*lock_level,
 								RETURN_CODE_TYPE  *return_code )
 

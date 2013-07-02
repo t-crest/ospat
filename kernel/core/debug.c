@@ -59,6 +59,12 @@
 #include <core/thread.h>
 #include <core/partition.h>
 
+#ifdef POK_ARCH_PATMOS
+#include <stdio.h>
+#else
+#include <libc.h>
+#endif
+
 
 int debug_strlen (const char* str)
 {
@@ -87,7 +93,9 @@ void pok_debug_print_current_state ()
 	printf ("Thread high		: %d\n", POK_CURRENT_PARTITION.thread_index_high);
 	printf ("Thread capacity	: %d\n", POK_CURRENT_PARTITION.nthreads);
 	printf ("Base addr		: 0x%x\n", POK_CURRENT_PARTITION.base_addr);
+#ifndef POK_ARCH_PATMOS
 	printf ("Base vaddr		: 0x%x\n", POK_CURRENT_PARTITION.base_vaddr);
+#endif
 	printf ("Size			: %d\n", POK_CURRENT_PARTITION.size);
 	printf ("Current thread		: %d\n", POK_CURRENT_PARTITION.current_thread);
 	printf ("Prev current thread	: %d\n", POK_CURRENT_PARTITION.prev_current_thread);
@@ -96,18 +104,22 @@ void pok_debug_print_current_state ()
 	printf ("Partition threads sp 	:");
 	for (i = POK_CURRENT_PARTITION.thread_index_low ; i < POK_CURRENT_PARTITION.thread_index_low + POK_CURRENT_PARTITION.thread_index ; i++)
 	{
+		#ifndef POK_ARCH_PATMOS
 		printf (" 0x%x", pok_threads[i].sp);
+		#endif
 	}
 	printf ("\n");
 	printf ("-------------\n");
 #endif
 	printf ("Current thread		: %d\n", POK_SCHED_CURRENT_THREAD);
-	printf ("Period			: %d\n", POK_CURRENT_THREAD.period);
-	printf ("Deadline		: %d\n", POK_CURRENT_THREAD.deadline);
+	printf ("Period			: %lld\n", POK_CURRENT_THREAD.period);
+	printf ("Deadline		: %lld\n", POK_CURRENT_THREAD.deadline);
 	printf ("Partition		: %d\n", POK_CURRENT_THREAD.partition);
+	#ifndef POK_ARCH_PATMOS
 	printf ("sp			: 0x%x\n", POK_CURRENT_THREAD.sp);
+	#endif
 	printf ("init_stack_addr	: 0x%x\n", POK_CURRENT_THREAD.init_stack_addr);
-	printf ("entry			: 0x%x\n", POK_CURRENT_THREAD.entry);
+	printf ("entry			: 0x%x\n", (uint32_t)POK_CURRENT_THREAD.entry);
 }
 
 

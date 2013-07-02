@@ -68,7 +68,11 @@
 
 #include <dependencies.h>
 #if defined (POK_NEEDS_CONSOLE) || defined (POK_NEEDS_DEBUG) 
- #include <libc.h>
+#ifdef POK_ARCH_PATMOS
+#include <stdio.h>
+#else
+#include <libc.h>
+#endif
 #endif
 
 

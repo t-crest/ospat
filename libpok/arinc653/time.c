@@ -65,15 +65,17 @@
 *********************************************************************/
 void TIMED_WAIT (SYSTEM_TIME_TYPE delay_time, RETURN_CODE_TYPE *return_code)
 {
-	*return_code = pok_thread_sleep(delay_time);
+	*return_code = (RETURN_CODE_TYPE) pok_thread_sleep(delay_time);
 }
 
 /********************************************************************
 * SERVICE  PERIODIC_WAIT
 ********************************************************************/
+void PERIODIC_WAIT (RETURN_CODE_TYPE * const	/* out */	RETURN_CODE) __attribute__((used));
+
 void PERIODIC_WAIT (RETURN_CODE_TYPE * const	/* out */	RETURN_CODE)
 {
-	*RETURN_CODE = pok_thread_period ();
+	*RETURN_CODE = (RETURN_CODE_TYPE) pok_thread_period ();
 }
 
 
@@ -86,7 +88,7 @@ void GET_TIME	(TIME_TYPE * const			/* out */	TIME,
 	/* the first 32 bits are put in TIME.MSB_TIME  */	 
 	/* the second 32 bits are put in TIME.LSB_TIME */ 
 	uint64_t time_tmp;	
-	*RETURN_CODE = pok_time_get (&time_tmp);	
+	*RETURN_CODE = (RETURN_CODE_TYPE) pok_time_get (&time_tmp);	
 	TIME->MSB_TIME = (uint32_t)(time_tmp >> 32);
 	// maybe not the best way to take the lsb byte but it works	
 	TIME->LSB_TIME = (uint32_t)((time_tmp << 32)>>32);	

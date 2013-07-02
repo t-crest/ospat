@@ -55,7 +55,6 @@
 #include <core/partition.h>
 
 #include <types.h>
-#include <libc.h>
 
 void pok_arch_sc_int(	uint32_t num, 
 						uint32_t arg1,

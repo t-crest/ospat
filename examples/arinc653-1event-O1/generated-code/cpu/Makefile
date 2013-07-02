@@ -4,7 +4,7 @@ export POK_CONFIG_OPTIMIZE_FOR_GENERATED_CODE=1
 include $(POK_PATH)/misc/mk/config.mk
 include $(POK_PATH)/misc/mk/common-$(ARCH).mk
 TARGET=$(shell pwd)/pok.elf
-PARTITIONS= part1/part1.elf 
+PARTITIONS= part1/part1.lo 
 
 HEADERFILE=kernel/deployment.h
 $(if $(wildcard $(HEADERFILE)),,$(error "kernel/deployment.h is missing, bye bye."))
@@ -16,6 +16,9 @@ export SKIP_LOADER=$(shell grep -i POK_SKIP_LOADER $(HEADERFILE)|grep -v "/")
 export PARTITIONS_ADDR=`awk '{if ($$2 == "POK_CONFIG_PARTITIONS_LOADADDR") print $$3}' $(HEADERFILE)|sed 's/{//'|sed 's/}//'|sed 's/,/ /g'`
 
 KERNEL=kernel/kernel.lo
+# Build only kernel
+# all: build-lds build-kernel $(TARGET)
+# Build kernel and partitions
 all: build-lds build-kernel partitions $(TARGET)
 
 ifeq ($(ARCH), patmos)
@@ -28,15 +31,19 @@ endif
 kernel-lds:  
 # Handle Patmos linker script
 ifeq ($(ARCH), patmos)
-	$(ECHO) "Patmos all in one compilation"
+	$(ECHO) "Patmos compilation: creating kernel linker script"
 	cp $(POK_PATH)/misc/ldscripts/$(ARCH)/$(BSP)/kernel_preamble.lds $(POK_PATH)/misc/ldscripts/$(ARCH)/$(BSP)/kernel_t.lds
-	c=1;for v in $(PARTITIONS_ADDR); do \
-		$(ECHO) "Base address" $$v "-" $$c ": in kernel.lds" ; \
-		$(ECHO) "   . = $$v; " >> $(POK_PATH)/misc/ldscripts/$(ARCH)/$(BSP)/kernel_t.lds; \
-		$(ECHO) "   .part$$c :  " >> $(POK_PATH)/misc/ldscripts/$(ARCH)/$(BSP)/kernel_t.lds; \
-		$(ECHO) "   { " >> $(POK_PATH)/misc/ldscripts/$(ARCH)/$(BSP)/kernel_t.lds; \
-		$(ECHO) "       part$$c.elf(.text) " >> $(POK_PATH)/misc/ldscripts/$(ARCH)/$(BSP)/kernel_t.lds; \
-		$(ECHO) "   } " >> $(POK_PATH)/misc/ldscripts/$(ARCH)/$(BSP)/kernel_t.lds; \
+#	c=1;for v in $(PARTITIONS_ADDR); do \
+#		$(ECHO) "Base address" $$v "-" $$c ": in kernel.lds" ; \
+#		$(ECHO) "   __part$${c}_start = .; " >> $(POK_PATH)/misc/ldscripts/$(ARCH)/$(BSP)/kernel_t.lds; \
+#		$(ECHO) "   .text.partition_$$c : { " >> $(POK_PATH)/misc/ldscripts/$(ARCH)/$(BSP)/kernel_t.lds; \
+#		$(ECHO) "   *(.text.part1) " >> $(POK_PATH)/misc/ldscripts/$(ARCH)/$(BSP)/kernel_t.lds; \
+#		$(ECHO) "   } " >> $(POK_PATH)/misc/ldscripts/$(ARCH)/$(BSP)/kernel_t.lds; \
+#		$(ECHO) "   . = $$v; " >> $(POK_PATH)/misc/ldscripts/$(ARCH)/$(BSP)/kernel_t.lds; \
+#		$(ECHO) "   .part$$c :  " >> $(POK_PATH)/misc/ldscripts/$(ARCH)/$(BSP)/kernel_t.lds; \
+#		$(ECHO) "   { " >> $(POK_PATH)/misc/ldscripts/$(ARCH)/$(BSP)/kernel_t.lds; \
+#		$(ECHO) "       part$$c.elf(.text) " >> $(POK_PATH)/misc/ldscripts/$(ARCH)/$(BSP)/kernel_t.lds; \
+#		$(ECHO) "   } " >> $(POK_PATH)/misc/ldscripts/$(ARCH)/$(BSP)/kernel_t.lds; \
 		$(ECHO) " " >> $(POK_PATH)/misc/ldscripts/$(ARCH)/$(BSP)/kernel_t.lds; \
 		c=`$(ECHO) $${c}+1 | bc` ; \
 	done

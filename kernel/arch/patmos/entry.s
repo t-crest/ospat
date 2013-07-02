@@ -56,6 +56,10 @@
 /* Entry point, starts the boot sequence */
 base	= .
 
+		  .section ".start", "ax"
+/* Entry point, starts the boot sequence */
+base	= .
+
 		.globl 		_pok_reset
 		.type 		_pok_reset,@function
 		.size 		_pok_reset, .Ltmp8-_pok_reset
@@ -65,65 +69,39 @@ _pok_reset:
 		li		$r2 				= pok_shadow_stack_end
 		mov 	$r29 				= $r1
 		mts 	$st  				= $r2
-
+		mts 	$ss 				= $r2
 		and 	$r0 				= $r0, 0x0
 
 		brcf 	_pok_clear_bss
 		nop
 		nop	
+		nop
 .Ltmp8:
+
 
 		.type 		_pok_clear_bss,@function
 		.size 		_pok_clear_bss, .Ltmp12-_pok_clear_bss
 		.fstart		_pok_clear_bss, .Ltmp12-_pok_clear_bss, 4
 _pok_clear_bss:
 
-				li $r3 					= __sbss_start
-				li $r5 					= __sbss_end
-				cmplt $p1				= $r3, $r5
-		(!$p1) 	br .Ltmp22
-				nop
-				nop
-	.Ltmp21:	swm	[$r3] 				= $r0
-				add $r3					= $r3, 4
-				cmplt $p1				= $r3, $r5
-		($p1) 	br .Ltmp21
-				nop
-				nop
-	.Ltmp22:	li $r3 					= __sbss2_start
-				li $r5 					= __sbss2_end
-				cmplt $p1				= $r3, $r5
-		(!$p1) 	br .Ltmp24
-				nop
-				nop
-	.Ltmp23:	swm	[$r3]	 			= $r0
-				add $r3 				= $r3, 4
-				cmplt 	$p1				= $r3, $r5
-		($p1) 	br .Ltmp23
-				nop	
-				nop
-	.Ltmp24:			li $r3 					= __bss_start
+
+	4:			li $r3 					= __bss_start
 				li $r5 					= __bss_end
 				cmplt $p1				= $r3, $r5
-		(!$p1) 	br .Ltmp26
-				nop	
-				nop
-	.Ltmp25:	swm	[$r3] 				= $r0
+		(!$p1) 	br 6
+	5:			swm	[$r3] 				= $r0
 				add $r3 				= $r3, 4
 				cmplt $p1				= $r3, $r5
-		($p1)	br .Ltmp25
+		($p1)	br 5
 				nop
 				nop
-	.Ltmp26:	// TODO: change to call, figure out why does not work
-				brcf 					pok_boot
+				nop
+	6:			
 				li $r30					= _pok_clear_bss
-				nop
-
-	.Ltmp27: 	// Loop forever if we get here
-				br						.Ltmp27
+				call 					pok_boot
 				nop
 				nop
-	
+				nop
 .Ltmp12:
 
 // Needs to be registered by the boot code
@@ -176,9 +154,12 @@ _interval_ISR:
 		swm  	[$r1 + 29] 		= $r30
 		swm  	[$r1 + 30] 		= $r31
 
+  		sub     $r2 		    = $r5, $r6
+  		sspill  $r2
+  		swm     [$r1 + 48] 		= $r2
 		// Spill everything from the stack cache
-		sres 	0x3FFFF /* MAX_STACK_CACHE_SIZE */
-		sfree 	0x3FFFF /* MAX_STACK_CACHE_SIZE */
+		//sres 	0x3FFFF /* MAX_STACK_CACHE_SIZE */
+		//sfree 	0x3FFFF /* MAX_STACK_CACHE_SIZE */
 
 		// Store special purpose registers
 		mfs	 	$r2 			= $s0
@@ -226,11 +207,13 @@ _interval_ISR:
 		li		$r29 			= pok_shadow_stack_end
 
 		// Call interrupt routine 
-		call 	pok_arch_decr_int
 		li		$r30 				= _interval_ISR
+		call 	pok_arch_decr_int
+		nop
 		nop
 
 		brcf 	restore_context
+		nop
 		nop
 		nop
 
@@ -288,9 +271,12 @@ system_call:
 		swm  	[$r1 + 29] 		= $r30
 		swm  	[$r1 + 30] 		= $r31
 
+  		sub     $r2 		    = $r5, $r6
+  		sspill  $r2
+  		swm     [$r1 + 48] 		= $r2
 		// Spill everything from the stack cache
-		sres 	0x3FFFF /* MAX_STACK_CACHE_SIZE */
-		sfree 	0x3FFFF /* MAX_STACK_CACHE_SIZE */
+		//sres 	0x3FFFF /* MAX_STACK_CACHE_SIZE */
+		//sfree 	0x3FFFF /* MAX_STACK_CACHE_SIZE */
 
 		// Store special purpose registers
 		mfs	 	$r2 			= $s0
@@ -338,22 +324,25 @@ system_call:
 		li		$r29 			= pok_shadow_stack_end
 
 		/* Function call */
-		call 	pok_arch_sc_int
 		li		$r30 				= system_call
+		call 	pok_arch_sc_int
+		nop
+		nop
 		nop
 
 		brcf 	restore_context /* pok_arch_rfi */
 		nop
 		nop
+		nop
 .Ltmp2:
 
-		.section ".bss", "aw"
+	.section ".bss", "aw"
 pok_stack:
 		.space 8 * 1024
 		.globl pok_stack_end
 pok_stack_end:
 
-pok_shadow_stack:
+pok_cache_stack:
 		.space 8 * 1024
 		.globl pok_shadow_stack_end
 pok_shadow_stack_end:
@@ -361,3 +350,4 @@ pok_shadow_stack_end:
 pok_save_area:
 		.space 4 * 8
 		.section ".reset", "ax"
+

@@ -96,7 +96,7 @@ uint32_t		pok_context_create (uint32_t id,
 	ctx->r29		= (uint32_t) (ctx - stack_size - 4);
 
 	#ifdef POK_NEEDS_DEBUG
-	printf ("ctxt_create %d: sp=%x\n", id, ctx);
+	printf ("ctxt_create %d: sp=%x\n", id, ctx->s5);
 	#endif
 	return (uint32_t)ctx;
 }

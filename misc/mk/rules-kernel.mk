@@ -12,8 +12,6 @@ ifneq ($(DEPLOYMENT_HEADER),)
 COPTS += -include $(DEPLOYMENT_HEADER)
 endif
 
-#LDFLAGS += -Xgold -T -Xgold $(POK_PATH)/misc/ldscripts/$(ARCH)/prep/kernel.lds
-
 kernel:
 	$(CD) $(POK_PATH)/kernel && $(MAKE) distclean all
 

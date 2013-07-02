@@ -91,6 +91,10 @@ void GET_PARTITION_START_CONDITION
 ********************************************************************/
 void SET_PARTITION_MODE
 		(const OPERATING_MODE_TYPE	/* in */	OPERATING_MODE, 
+		RETURN_CODE_TYPE * const  	/* out */	RETURN_CODE) __attribute__((used));
+
+void SET_PARTITION_MODE
+		(const OPERATING_MODE_TYPE	/* in */	OPERATING_MODE, 
 		RETURN_CODE_TYPE * const  	/* out */	RETURN_CODE)
 {	
 		pok_partition_set_mode(OPERATING_MODE);

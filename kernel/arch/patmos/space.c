@@ -57,6 +57,7 @@
 #include "thread.h"
 
 #include <arch.h>
+#include <stdio.h>
 
 #define KERNEL_STACK_SIZE           16384
 #define KERNEL_SHADOW_STACK_SIZE    16384
@@ -75,30 +76,6 @@ struct pok_space spaces[POK_CONFIG_NB_PARTITIONS];
 
 // Extern exit method
 extern void exit(int level);
-
-// Forward reference to method that inits all page table entries
-// TODO: remove the following
-// void pok_init_page_table_entries ( uint8_t, uint32_t, uint32_t);
-
-// Creates space for the specified partition
-// at the given address and for the given size
-// called in function pok_partition_init from partition.c
-// addr calculation is made in the caller via
-// pok_bsp_mem_alloc
-pok_ret_t pok_create_space (uint8_t partition_id,
-									 uint32_t addr,
-									 uint32_t size)
-{
-#ifdef POK_NEEDS_DEBUG
-	printf ("pok_create_space: %d: %x %x\n", partition_id, addr, size);
-#endif
-
-	// Adding physical space
-	spaces[partition_id].phys_base = addr;
-	spaces[partition_id].size = size;
-
-	return (POK_ERRNO_OK);
-}
 
 extern void restore_context (void);
 
@@ -128,7 +105,7 @@ uint32_t pok_space_context_create (uint8_t partition_id,
 
 
 #ifdef POK_NEEDS_DEBUG
-  printf ("ctx starts at: 0x%x \n", ctx);
+  printf ("ctx starts at: 0x%x \n", (uint32_t)ctx);
 #endif
 
   memset (ctx, 0, sizeof (*ctx));

@@ -48,8 +48,8 @@
  *		POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef __POK_PPC_TYPES_H__
-#define __POK_PPC_TYPES_H__
+#ifndef __POK_PATMOS_TYPES_H__
+#define __POK_PATMOS_TYPES_H__
 
 typedef unsigned short		uint8_t;
 typedef unsigned short		uint16_t;

@@ -71,7 +71,11 @@
 #include <core/partition.h>
 #include <core/thread.h>
 #include <core/lockobj.h>
+#ifdef POK_ARCH_PATMOS
+#include <stdio.h>
+#else
 #include <libc.h>
+#endif
 
 pok_lockobj_t	pok_partitions_lockobjs[POK_CONFIG_NB_LOCKOBJECTS];
 

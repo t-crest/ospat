@@ -89,6 +89,12 @@ pok_arinc653_event_layer_t	pok_arinc653_events_layers[POK_CONFIG_NB_EVENTS];
 /********************************************************************
 * SERVICE  CREATE_EVENT
 *********************************************************************/
+#ifdef POK_ARCH_PATMOS
+void CREATE_EVENT (EVENT_NAME_TYPE EVENT_NAME,
+						 EVENT_ID_TYPE *EVENT_ID,
+						 RETURN_CODE_TYPE *RETURN_CODE) __attribute__((used));
+#endif
+
 void CREATE_EVENT (EVENT_NAME_TYPE EVENT_NAME,
 						 EVENT_ID_TYPE *EVENT_ID,
 						 RETURN_CODE_TYPE *RETURN_CODE)
@@ -143,6 +149,10 @@ void CREATE_EVENT (EVENT_NAME_TYPE EVENT_NAME,
 /********************************************************************
 * SERVICE  SET_EVENT
 *********************************************************************/
+#ifdef POK_ARCH_PATMOS
+void SET_EVENT (EVENT_ID_TYPE EVENT_ID, RETURN_CODE_TYPE *RETURN_CODE) __attribute__((used));
+#endif
+
 void SET_EVENT (EVENT_ID_TYPE EVENT_ID, RETURN_CODE_TYPE *RETURN_CODE)
 {
 	pok_ret_t core_ret;
@@ -182,6 +192,10 @@ void SET_EVENT (EVENT_ID_TYPE EVENT_ID, RETURN_CODE_TYPE *RETURN_CODE)
 /********************************************************************
 * SERVICE  RESET_EVENT
 *********************************************************************/
+#ifdef POK_ARCH_PATMOS
+void RESET_EVENT (EVENT_ID_TYPE EVENT_ID, RETURN_CODE_TYPE *RETURN_CODE) __attribute__((used));
+#endif
+
 void RESET_EVENT (EVENT_ID_TYPE EVENT_ID, RETURN_CODE_TYPE *RETURN_CODE)
 {
 	//(void) EVENT_ID;
@@ -213,6 +227,12 @@ void RESET_EVENT (EVENT_ID_TYPE EVENT_ID, RETURN_CODE_TYPE *RETURN_CODE)
 /********************************************************************
 * SERVICE  WAIT_EVENT
 *********************************************************************/
+#ifdef POK_ARCH_PATMOS
+void WAIT_EVENT (EVENT_ID_TYPE EVENT_ID,
+					  SYSTEM_TIME_TYPE TIME_OUT,
+					  RETURN_CODE_TYPE *RETURN_CODE);
+#endif
+
 void WAIT_EVENT (EVENT_ID_TYPE EVENT_ID,
 					  SYSTEM_TIME_TYPE TIME_OUT,
 					  RETURN_CODE_TYPE *RETURN_CODE)
@@ -270,6 +290,12 @@ void WAIT_EVENT (EVENT_ID_TYPE EVENT_ID,
 /********************************************************************
 * SERVICE  GET_EVENT_ID
 *********************************************************************/
+#ifdef POK_ARCH_PATMOS
+void GET_EVENT_ID (EVENT_NAME_TYPE EVENT_NAME,
+						 EVENT_ID_TYPE *EVENT_ID,
+						 RETURN_CODE_TYPE *RETURN_CODE) __attribute__((used));
+#endif
+
 void GET_EVENT_ID (EVENT_NAME_TYPE EVENT_NAME,
 						 EVENT_ID_TYPE *EVENT_ID,
 						 RETURN_CODE_TYPE *RETURN_CODE)
@@ -297,6 +323,12 @@ void GET_EVENT_ID (EVENT_NAME_TYPE EVENT_NAME,
 /********************************************************************
 * SERVICE  GET_EVENT_STATUS
 *********************************************************************/
+#ifdef POK_ARCH_PATMOS
+void GET_EVENT_STATUS (EVENT_ID_TYPE EVENT_ID,
+							  EVENT_STATUS_TYPE *EVENT_STATUS,
+							  RETURN_CODE_TYPE *RETURN_CODE) __attribute__((used));
+#endif
+
 void GET_EVENT_STATUS (EVENT_ID_TYPE EVENT_ID,
 							  EVENT_STATUS_TYPE *EVENT_STATUS,
 							  RETURN_CODE_TYPE *RETURN_CODE)

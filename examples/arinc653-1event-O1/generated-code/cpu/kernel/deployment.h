@@ -65,7 +65,7 @@
 
 #define POK_CONFIG_PARTITIONS_NLOCKOBJECTS	{1}
 
-
+#define POK_NEEDS_DEBUG	1
 
 
 

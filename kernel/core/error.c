@@ -54,7 +54,12 @@
 #include <core/error.h>
 #include <core/debug.h>
 #include <core/partition.h>
+ 
+#ifdef		POK_ARCH_PATMOS
+#include <stdio.h>
+#else
 #include <libc.h>
+#endif 
 
 #ifdef POK_NEEDS_ERROR_HANDLING
 

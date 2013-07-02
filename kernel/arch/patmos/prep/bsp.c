@@ -72,9 +72,8 @@ pok_bool_t pok_cons_write (const char *s, size_t length)
 {
 	for (size_t i = 0; i < length; i++)
 	{
-		char c = s[i];
-		c = 'c';
+		if (printf("%c", s[i])==0) return i;
 	}
-	//	if (printf("%c", s[i])==0) return 0;
+	
 	return length;
 }

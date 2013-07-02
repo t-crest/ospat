@@ -54,6 +54,7 @@
 
 #include <types.h>
 
+#ifdef POK_ARCH_PPC
 /**
  * \brief Load the program of the partition
  *
@@ -63,5 +64,18 @@
 void pok_loader_load_partition (const uint8_t part_id,
 								 uint32_t offset,
 								 uint32_t *entry);
+#endif
+
+#ifdef POK_ARCH_PATMOS
+/**
+ * \brief Load the program of the partition
+ *
+ * It loads the next program on the UART and assigns
+ * it to the next partition id
+ */
+void pok_loader_load_partition (const uint8_t part_id, 
+								uint32_t *entry);
+#endif
+
 #endif /* !__POK_LOADER_H__ */
 
