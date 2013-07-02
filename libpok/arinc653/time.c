@@ -71,8 +71,6 @@ void TIMED_WAIT (SYSTEM_TIME_TYPE delay_time, RETURN_CODE_TYPE *return_code)
 /********************************************************************
 * SERVICE  PERIODIC_WAIT
 ********************************************************************/
-void PERIODIC_WAIT (RETURN_CODE_TYPE * const	/* out */	RETURN_CODE) __attribute__((used));
-
 void PERIODIC_WAIT (RETURN_CODE_TYPE * const	/* out */	RETURN_CODE)
 {
 	*RETURN_CODE = (RETURN_CODE_TYPE) pok_thread_period ();

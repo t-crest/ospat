@@ -48,17 +48,9 @@
  *		POSSIBILITY OF SUCH DAMAGE.
  */
 
-/**
- *	TODO: Precompilation directives seem not to be
- * 	considered by llvm compiler
- */
 		  .section ".start", "ax"
 /* Entry point, starts the boot sequence */
-base	= .
-
-		  .section ".start", "ax"
-/* Entry point, starts the boot sequence */
-base	= .
+base: 
 
 		.globl 		_pok_reset
 		.type 		_pok_reset,@function
@@ -226,6 +218,7 @@ _interval_ISR:
 		.globl		system_call
 		.type 		system_call,@function
 		.size 		system_call, .Ltmp2-system_call
+		.org		0x900 - 4
 		.fstart		system_call, .Ltmp2-system_call, 4
 system_call:
 		// Reset r0 to 0

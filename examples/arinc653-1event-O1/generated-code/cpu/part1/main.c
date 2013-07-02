@@ -5,6 +5,10 @@
 #include "deployment.h"
 #include <arinc653/event.h>
 
+#ifdef POK_ARCH_PATMOS
+	#include <stdio.h>
+#endif
+
 
 PROCESS_ID_TYPE arinc_threads[POK_CONFIG_NB_THREADS];
 
@@ -20,7 +24,7 @@ int main ()
 	printf("	part1 - Main thread\n");
 
 	CREATE_EVENT (pok_arinc653_events_names[0], &(pok_arinc653_events_ids[0]), &(ret));
-	printf("	Event %s created! EVENT ID: %u, ret: %d \n", pok_arinc653_events_names[0], pok_arinc653_events_ids[0], ret);
+	printf("	Event %s created! EVENT ID: %u, ret: %d \n", pok_arinc653_events_names[0], (unsigned int) pok_arinc653_events_ids[0], ret);
 
 	tattr.PERIOD = 400;
 	tattr.BASE_PRIORITY = 10;

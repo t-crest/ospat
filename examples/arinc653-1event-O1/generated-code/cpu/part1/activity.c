@@ -4,6 +4,10 @@
 #include <arinc653/event.h>
 #include "deployment.h"
 
+#ifdef POK_ARCH_PATMOS
+	#include <stdio.h>
+#endif
+
 
 extern EVENT_ID_TYPE pok_arinc653_events_ids[1];
 
@@ -44,7 +48,7 @@ void* thr1_1bis_job()
 		SUSPEND_SELF (time, &ret);
 		printf ("\t2: Resume - Going to WAIT_EVENT \n");
 		WAIT_EVENT (pok_arinc653_events_ids[0], 0, &(ret));
-		printf ("\t2: Event %i is UP\n", pok_arinc653_events_ids[0]);
+		printf ("\t2: Event %i is UP\n", (unsigned int) pok_arinc653_events_ids[0]);
 	}
 }
 
@@ -79,7 +83,7 @@ void* thr1_3bis_job()
 		if (flag){
 			printf("\t4: Resume - Continuation after event is set\n\n");
 			RESET_EVENT (pok_arinc653_events_ids[0], &(ret));
-			printf("\t4: Event %i is DOWN [%i]\n", pok_arinc653_events_ids[0], ret);
+			printf("\t4: Event %i is DOWN [%i]\n", (unsigned int) pok_arinc653_events_ids[0], ret);
 			printf("\t4: Th self-suspending.........zzzz\n");
 		} else {
 			flag=1;
