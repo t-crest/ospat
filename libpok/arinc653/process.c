@@ -316,10 +316,9 @@ void STOP_SELF ()
 *********************************************************************/
 void SUSPEND (PROCESS_ID_TYPE	 PROCESS_ID, RETURN_CODE_TYPE	*return_code )
 {
-		pok_ret_t		core_ret;
-
-		core_ret		= pok_thread_suspend_other(PROCESS_ID);
-		*return_code 	= NO_ERROR;
+	pok_ret_t		core_ret;
+	core_ret		= pok_thread_suspend_other(PROCESS_ID);
+	*return_code 	= NO_ERROR;
 }
 
 /********************************************************************
@@ -327,11 +326,11 @@ void SUSPEND (PROCESS_ID_TYPE	 PROCESS_ID, RETURN_CODE_TYPE	*return_code )
 *********************************************************************/
 void SUSPEND_SELF (SYSTEM_TIME_TYPE time_out, RETURN_CODE_TYPE *return_code )
 {
-		//pok_ret_t		core_ret;
-		(void) time_out; // Time-out function has not been implemented yet
-		//core_ret = 
+	//pok_ret_t		core_ret;
+	(void) time_out; // Time-out function has not been implemented yet
+	//core_ret = 
 	 pok_thread_suspend();
-		*return_code = NO_ERROR;
+	*return_code = NO_ERROR;
 }
 
 /********************************************************************
@@ -340,10 +339,10 @@ void SUSPEND_SELF (SYSTEM_TIME_TYPE time_out, RETURN_CODE_TYPE *return_code )
 void RESUME (PROCESS_ID_TYPE  /* in*/	PROCESS_ID,
 				 RETURN_CODE_TYPE /*out*/  *RETURN_CODE )
 {
-		pok_ret_t	core_ret;	
-/* Implement required checks */
-		core_ret = pok_thread_resume (PROCESS_ID);
-		*RETURN_CODE = (RETURN_CODE_TYPE) core_ret;
+	pok_ret_t	core_ret;	
+	/* Implement required checks */
+	core_ret = pok_thread_resume (PROCESS_ID);
+	*RETURN_CODE = (RETURN_CODE_TYPE) core_ret;
 }
 
 

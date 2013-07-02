@@ -5,7 +5,8 @@ include $(TOPDIR)/misc/mk/config.mk
 
 LO_TARGET=	patmos.lo
 
-LO_OBJS= syscall.o
+LO_OBJS= arch.o \
+		syscall.o
 
 LO_DEPS=	
 

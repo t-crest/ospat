@@ -48,27 +48,107 @@
  *		POSSIBILITY OF SUCH DAMAGE.
  */
 
- //TODO Fix the whole system call mechanism
+#include "core/syscall.h"
 
-		  .text
-		  .globl pok_syscall2
-		  .globl pok_syscall3
-		  .globl pok_syscall4
-		  .globl pok_syscall5
-		  .globl pok_syscall6 
-		  .globl pok_syscall7 
-pok_syscall2:
-pok_syscall3:
-pok_syscall4:
-pok_syscall5:
-pok_syscall6:	
-pok_syscall7:
-		//call system_call
-		nop
-		nop
+#define SYS_CALL_ADDR 	0x1C0900
+#define NOT_USED(x) 	((void)(x))
 
-		// We never get there
-		ret	$r30, $r31          
-	    nop	                   
-	    nop
-	    nop
+uint32_t (*syscall)(void) = (uint32_t (*)(void)) SYS_CALL_ADDR;
+
+pok_ret_t pok_syscall1  (pok_syscall_id_t syscall_id,
+						uint32_t arg1)
+{
+	NOT_USED(syscall_id);
+	NOT_USED(arg1);
+	return syscall();
+}
+ 
+pok_ret_t pok_syscall2  (pok_syscall_id_t syscall_id,
+						uint32_t arg1,
+						uint32_t arg2)
+{
+	NOT_USED(syscall_id);
+	NOT_USED(arg1);	
+	NOT_USED(arg2);
+	return syscall();
+}
+ 
+pok_ret_t pok_syscall3 (pok_syscall_id_t syscall_id,
+						uint32_t arg1,
+						uint32_t arg2,
+						uint32_t arg3)
+{
+	NOT_USED(syscall_id);
+	NOT_USED(arg1);	
+	NOT_USED(arg2);
+	NOT_USED(arg3);	
+	return syscall();
+}
+
+pok_ret_t pok_syscall4 (pok_syscall_id_t syscall_id,
+						uint32_t arg1,
+						uint32_t arg2,
+						uint32_t arg3,
+						uint32_t arg4)
+{
+	NOT_USED(syscall_id);
+	NOT_USED(arg1);	
+	NOT_USED(arg2);
+	NOT_USED(arg3);	
+	NOT_USED(arg4);		
+	return syscall();
+}
+ 
+pok_ret_t pok_syscall5 (pok_syscall_id_t syscall_id,
+						uint32_t arg1,
+						uint32_t arg2,
+						uint32_t arg3,
+						uint32_t arg4,
+						uint32_t arg5)
+{
+	NOT_USED(syscall_id);
+	NOT_USED(arg1);	
+	NOT_USED(arg2);
+	NOT_USED(arg3);	
+	NOT_USED(arg4);	
+	NOT_USED(arg5);	
+	return syscall();
+}
+
+pok_ret_t pok_syscall6 (pok_syscall_id_t syscall_id,
+						uint32_t arg1,
+						uint32_t arg2,
+						uint32_t arg3,
+						uint32_t arg4,
+						uint32_t arg5,
+						uint32_t arg6)
+{
+	NOT_USED(syscall_id);
+	NOT_USED(arg1);	
+	NOT_USED(arg2);
+	NOT_USED(arg3);	
+	NOT_USED(arg4);	
+	NOT_USED(arg5);		
+	NOT_USED(arg6);
+	return syscall();
+}
+
+pok_ret_t pok_syscall7 (pok_syscall_id_t  syscall_id,
+						uint32_t arg1,
+						uint32_t arg2,
+						uint32_t arg3,
+						uint32_t arg4,
+						uint32_t arg5,
+						uint32_t arg6,
+						uint32_t arg7)
+{
+	NOT_USED(syscall_id);
+	NOT_USED(arg1);	
+	NOT_USED(arg2);
+	NOT_USED(arg3);	
+	NOT_USED(arg4);	
+	NOT_USED(arg5);		
+	NOT_USED(arg6);	
+	NOT_USED(arg7);
+	return syscall();
+}
