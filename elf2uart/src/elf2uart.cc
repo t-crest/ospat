@@ -19,7 +19,7 @@
 // Command line options
 #include <boost/program_options.hpp>
 
-// Collect load section headers
+// Collect load segment headers
 #include <vector>
 
 static inline uint32_t toBigEndian(uint32_t value)
@@ -70,7 +70,7 @@ static void streamelf(const char* elf_filename, const char* uart_filename)
 	uint32_t big_entry = toBigEndian(entry);
 	fwrite(&big_entry, 4, 1, uart_file);
   
-	std::vector<GElf_Phdr> load_sections;
+	std::vector<GElf_Phdr> load_segments;
 
   for(i = 0; i < n; i++)
   {
@@ -81,21 +81,21 @@ static void streamelf(const char* elf_filename, const char* uart_filename)
 
     if (phdr.p_type == PT_LOAD)
     {
-			load_sections.push_back(phdr);
+			load_segments.push_back(phdr);
 		}
 	}
 
-	int sections_number = load_sections.size();
-	std::cout << "[elf2uart] " << std::left << std::setw(10) << "SECTIONS" << sections_number << std::endl;
+	int segments_number = load_segments.size();
+	std::cout << "[elf2uart] " << std::left << std::setw(10) << "SEGMENTS" << segments_number << std::endl;
 
-	uint32_t big_sections_number = toBigEndian(sections_number);
-	fwrite(&big_sections_number, 4, 1, uart_file);
+	uint32_t big_segments_number = toBigEndian(segments_number);
+	fwrite(&big_segments_number, 4, 1, uart_file);
 
 	std::cout << "[elf2uart] " << std::left << std::setw(10) << "START" 
 																					<< std::setw(15) << "FILE SIZE" 
 																					<< std::setw(10) << "TOTAL SIZE" << std::endl;
 
-	for(std::vector<GElf_Phdr>::iterator it = load_sections.begin(); it != load_sections.end(); ++it) 
+	for(std::vector<GElf_Phdr>::iterator it = load_segments.begin(); it != load_segments.end(); ++it) 
 	{
 		GElf_Phdr phdr = *it;
 

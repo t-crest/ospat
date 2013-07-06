@@ -76,7 +76,7 @@ void pok_boot ()
 
 	// Print system call address for debug purpose
 	printf("system_call address: %p\n", system_call);
-/*
+
 #ifdef POK_NEEDS_QEMU_SETUP 
    pok_bsp_init();
 #endif
@@ -110,5 +110,5 @@ void pok_boot ()
 	pok_time_init();		
 #endif
 
-	pok_arch_preempt_enable();*/
+	pok_arch_preempt_enable();
 }

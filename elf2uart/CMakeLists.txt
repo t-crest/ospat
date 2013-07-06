@@ -27,3 +27,6 @@ enable_testing()
 # add sub-directories
 add_subdirectory(src)
 
+set(dir ${CMAKE_CURRENT_SOURCE_DIR}/build)
+set(EXECUTABLE_OUTPUT_PATH ${dir} CACHE PATH "Build directory" FORCE)
+set(LIBRARY_OUTPUT_PATH ${dir} CACHE PATH "Build directory" FORCE)
