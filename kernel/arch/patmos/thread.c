@@ -57,10 +57,9 @@
 
 #ifdef POK_NEEDS_THREADS
 
-
 extern void pok_arch_thread_start(void);
 
-// Used to create kernel threads (idle thread)
+// Used to create special threads context (idle and kernel threads)
 uint32_t		pok_context_create (uint32_t id,
 									uint32_t stack_size,
 									uint32_t shadow_stack_size,
@@ -88,6 +87,7 @@ uint32_t		pok_context_create (uint32_t id,
 
 	// Setting base function address to return to
 	ctx->r30	= (uint32_t) pok_arch_thread_start;
+	ctx->s9		= (uint32_t) pok_arch_thread_start;
 
 	// Setting stack pointer and spill pointer
 	ctx->s5			= (uint32_t) (ctx - 4);
@@ -96,7 +96,7 @@ uint32_t		pok_context_create (uint32_t id,
 	ctx->r29		= (uint32_t) (ctx - stack_size - 4);
 
 	#ifdef POK_NEEDS_DEBUG
-	printf ("ctxt_create %d: sp=%x\n", id, ctx->s5);
+	printf ("[DEBUG]\t Creating context for thread %d, ctx: %p, sp: %x\n", id, ctx, ctx->s5);
 	#endif
 	return (uint32_t)ctx;
 }
@@ -144,5 +144,4 @@ void pok_context_print(context_t* ctx) {
 				ctx->r19);
 }
 #endif
-
 #endif

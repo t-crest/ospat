@@ -56,7 +56,7 @@
  */
 
 #include <types.h>
-
+#include <bsp.h>
 #include <arch.h>
 #include <core/debug.h>
 #include <core/error.h>
@@ -174,7 +174,7 @@ void pok_thread_init(void)
 	if (total_threads != (POK_CONFIG_NB_THREADS - 2))
 	{
   #ifdef POK_NEEDS_DEBUG
-		printf ("Error in configuration, bad number of threads\n");
+		printf ("[Debug]\t Error in configuration, bad number of threads\n");
   #endif
   #ifdef POK_NEEDS_ERROR_HANDLING
 		pok_kernel_error (POK_ERROR_KIND_KERNEL_CONFIG);
@@ -183,9 +183,18 @@ void pok_thread_init(void)
  #endif
 #endif /* POK_NEEDS_PARTITIONS */
 
+#ifdef POK_NEEDS_DEBUG
+	printf ("[Debug]\t Creating IDLE thread, id: %d\n", IDLE_THREAD);
+#endif
+
 	pok_threads[KERNEL_THREAD].priority			= pok_sched_get_priority_min(0);
 	pok_threads[KERNEL_THREAD].state			= POK_STATE_RUNNABLE;
 	pok_threads[KERNEL_THREAD].next_activation	= 0;
+
+#ifdef POK_ARCH_PATMOS
+	pok_threads[KERNEL_THREAD].ctx 				= (uint32_t)pok_bsp_mem_alloc(PATMOS_CONTEXT_SIZE);
+	pok_current_context							= pok_threads[KERNEL_THREAD].ctx;
+#endif
 
 	pok_threads[IDLE_THREAD].period				= 0;
 	
@@ -239,15 +248,15 @@ void pok_thread_init(void)
 	{
 		heads[i] = POK_NULL;
  #ifdef POK_NEEDS_DEBUG_HEAD_TAIL
-		printf("heads[%d] configured\n",i);
+		printf("[Debug]\t heads[%d] configured\n",i);
  #endif
 		for (j = 0; j < POK_CONFIG_PRIORITY_LEVELS; ++j)
 		{
 			priority_heads[i][j] = POK_NULL;
 			priority_tails[i][j] = POK_NULL;
  #ifdef POK_NEEDS_DEBUG_HEAD_TAIL
-			printf("priority_heads[%d][%d] configured\n",i,j);
-			printf("priority_tails[%d][%d] configured\n",i,j);
+			printf("[Debug]\t priority_heads[%d][%d] configured\n",i,j);
+			printf("[Debug]\t priority_tails[%d][%d] configured\n",i,j);
  #endif
 	  	}
 	}
@@ -262,13 +271,11 @@ void pok_thread_init(void)
  * Return POK_ERRNO_TOOMANY if the partition cannot contain
  * more threads.
  */
-pok_ret_t pok_partition_thread_create (	uint32_t*					thread_id,
+ pok_ret_t pok_partition_thread_create (	uint32_t*					thread_id,
 										const pok_thread_attr_t*	attr,
 										const uint8_t				partition_id)
 {
 	uint32_t id;
-
-	
 	uint32_t stack_vaddr;
 	#ifdef 		POK_ARCH_PATMOS
 	uint32_t shadow_stack_vaddr;
@@ -349,6 +356,10 @@ pok_ret_t pok_partition_thread_create (	uint32_t*					thread_id,
 								(uint32_t)attr->entry,
 								stack_addr,
 								shadow_stack_addr);		
+
+#ifdef POK_NEEDS_DEBUG	
+	printf("[DEBUG]\t Created thread %d for partition %d\n", id, partition_id);
+#endif
 #endif
 
 	pok_threads[id].partition		= partition_id; 
@@ -402,8 +413,10 @@ pok_ret_t pok_partition_thread_create (	uint32_t*					thread_id,
  #endif /* ifdef POK_NEEDS_SCHED_O1 */
 
  #ifdef POK_NEEDS_DEBUG
-	printf("DEBUG::pok_thread %d created in partition %d\n",*thread_id,partition_id);
-	printf("DEBUG::partition %d: index_low %d, index_high %d\n",partition_id,pok_partitions[partition_id].thread_index_low,pok_partitions[partition_id].thread_index_high);
+	printf("[DEBUG]\t pok_thread %d created in partition %d\n", *thread_id, partition_id);
+	printf("[DEBUG]\t partition %d: thread_index_low %d, thread_index_high %d\n", 
+		partition_id, pok_partitions[partition_id].thread_index_low, 
+		pok_partitions[partition_id].thread_index_high);
  #endif
 
 	pok_partitions[partition_id].thread_index =  pok_partitions[partition_id].thread_index + 1;
@@ -588,7 +601,7 @@ pok_ret_t pok_thread_resume (const uint32_t* tid)
 	if ((! pok_thread_aperiodic(pok_threads[thread_pos])) || (pok_threads[thread_pos].state != POK_STATE_SUSPENDED))
 	{
 #ifdef POK_NEEDS_DEBUG
-		printf("WARNING: Invoked RESUME on periodic or non-suspended thread\n");
+	printf("[DEBUG]\t WARNING: Invoked RESUME on periodic or non-suspended thread\n");
 #endif
 		return POK_ERRNO_EINVAL;
 	}
@@ -603,7 +616,7 @@ pok_ret_t pok_thread_resume (const uint32_t* tid)
 	POK_CURRENT_PARTITION.runnables |= (1 << (thread_pos - POK_CURRENT_PARTITION.thread_index_low));
  #endif /* POK_NEEDS_SCHED_O1_SPLIT */
  #ifdef POK_NEEDS_DEBUG_O1
-	printf("DEBUG_O1::Invoked RESUME on thread %u in position %u\n",*tid,thread_pos);
+	printf("[DEBUG]\t Invoked RESUME on thread %u in position %u\n", *tid, thread_pos);
  #endif
 #else /* ! POK_NEEDS_SCHED_O1 */
 	pok_threads[*tid].state = POK_STATE_RUNNABLE;

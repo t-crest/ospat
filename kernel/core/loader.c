@@ -250,8 +250,8 @@ void pok_loader_load_partition (const uint32_t part_id, uint32_t *entry)
     }
 
 #ifdef POK_NEEDS_DEBUG
-    printf("[Reading partition %d] Entry address: %p\n", part_id, (void*)part_entry);
-    printf("[Reading partition %d] Segments number: %d\n", part_id, segments);
+    printf("[DEBUG]\t [Reading partition %d] Entry address: %p\n", part_id, (void*)part_entry);
+    printf("[DEBUG]\t [Reading partition %d] Segments number: %d\n", part_id, segments);
 #endif
 
     unsigned int segment = 0;
@@ -274,7 +274,7 @@ void pok_loader_load_partition (const uint32_t part_id, uint32_t *entry)
       	}
 
 #ifdef POK_NEEDS_DEBUG
-      	printf("[Reading partition %d] Segment %d address: %p\n", part_id, segment, (void*)segment_address);
+      	printf("[DEBUG]\t [Reading partition %d] Segment %d address: %p\n", part_id, segment, (void*)segment_address);
 #endif
 
       	if (read_uint32(&segment_size) != sizeof(uint32_t))
@@ -290,7 +290,7 @@ void pok_loader_load_partition (const uint32_t part_id, uint32_t *entry)
 #endif
       	}
 #ifdef POK_NEEDS_DEBUG
-      	printf("[Reading partition %d] Segment %d size: %d\n", part_id, segment, segment_size);
+      	printf("[DEBUG]\t [Reading partition %d] Segment %d size: %d\n", part_id, segment, segment_size);
 #endif
 
       	if (read_data(segment_size, (char*)segment_address) != segment_size) {
@@ -306,7 +306,7 @@ void pok_loader_load_partition (const uint32_t part_id, uint32_t *entry)
       	}
 
 #ifdef POK_NEEDS_DEBUG
-      	printf("[Reading partition %d] Segmetn %d loaded\n", part_id, segment);
+      	printf("[DEBUG]\t [Reading partition %d] Segment %d loaded\n", part_id, segment);
 #endif
 
       	segment++;

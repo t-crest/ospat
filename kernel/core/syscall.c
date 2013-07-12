@@ -246,7 +246,6 @@ pok_ret_t pok_core_syscall (	const pok_syscall_id_t		 syscall_id,
 		case POK_SYSCALL_MIDDLEWARE_QUEUEING_CREATE: 
 			if (args->arg7 != POK_NULL){
 #ifdef POK_QD
-				printf("in syscall.c base addr: 0x%x, args->arg6 0x%x,(args->arg6 + infos->base_addr) 0x%x\n", 
 				infos->base_addr, args->arg7,(args->arg7 + infos->base_addr));		
 #endif
 				POK_CHECK_PTR_OR_RETURN(infos->partition, args->arg7 + infos->base_addr)
@@ -333,7 +332,7 @@ pok_ret_t pok_core_syscall (	const pok_syscall_id_t		 syscall_id,
 			pok_sched_activate_error_thread ();
 #else
 			#ifdef POK_NEEDS_DEBUG
-			printf ("Tried to use syscall %d\n", syscall_id);
+			printf ("[DEBUG]\n ERROR: Tried to use syscall %d\n", syscall_id);
 			#endif
 			POK_FATAL ("Unknown syscall");
 #endif

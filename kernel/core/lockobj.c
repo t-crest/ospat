@@ -256,7 +256,7 @@ pok_ret_t pok_lockobj_eventwait (pok_lockobj_t* obj, const uint64_t timeout)
 	 // Thre si no need to wait
 	if (obj->is_locked == FALSE){
   #ifdef DEBUG_LOCK
-		printf ("EVENT is already UP!");			
+		printf ("[DEBUG_LOCK]\t EVENT is already UP!");			
   #endif
 		return POK_ERRNO_OK;
 	 }
@@ -330,7 +330,7 @@ pok_ret_t pok_lockobj_eventsignal (pok_lockobj_t* obj)
 		{
 			found = 1;
   #ifdef DEBUG_LOCK
-			printf("unlocking th %i\n", tmp);
+			printf("[DEBUG_LOCK]\t Unlocking thread %i\n", tmp);
   #endif
 			// Update the lockobj state 
 			obj->thread_state[tmp] = LOCKOBJ_STATE_UNLOCK;
@@ -400,7 +400,7 @@ pok_ret_t pok_lockobj_eventbroadcast (pok_lockobj_t* obj)
 		if (obj->thread_state[tmp] == LOCKOBJ_STATE_WAITEVENT)
 		{
   #ifdef DEBUG_LOCK
-			printf("unlockiing th %i\n",tmp); 
+			printf("[DEBUG_LOCK]\t Unlocking thread %i\n", tmp); 
   #endif
 			pok_sched_unlock_thread (tmp);
 		}
@@ -458,7 +458,7 @@ pok_ret_t pok_lockobj_lock (pok_lockobj_t* obj, const pok_lockobj_lockattr_t* at
 	if (obj->initialized == FALSE)
 	{
  #ifdef DEBUG_LOCK
-		printf("pok_lockobj_lock-NOT init\n");
+		printf("[DEBUG_LOCK]\t Lock object NOT init\n");
  #endif
 		return POK_ERRNO_LOCKOBJ_NOTREADY;
 	}

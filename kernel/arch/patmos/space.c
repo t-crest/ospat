@@ -79,22 +79,13 @@ extern void exit(int level);
 
 extern void restore_context (void);
 
-// Return from interrupt procedure, restores 
-// the context. Defined in entry.S (assembly)
-// No need for it in Patmos
-// extern void pok_arch_rfi (void);
-
-// Creates context's space for the specified
-// thread, allocates stack space
-// Is used by pok_partition_thread_create in thread.c 
-// to create threads for the partition, the first time is called
-// to init partition's main thread
+// Creates context's space for the specified thread,
 // stack_rel is the pointer to the stack
 // shadow_stack_rel is the pointer to the shadow_stack
 // entry_rel is the pointer to the entry point of the thread
 uint32_t pok_space_context_create (uint8_t partition_id,
 									uint32_t entry_rel,	// for main thread is the address of the main routine (__pok_partition_start) that call the user main
-									uint32_t stack_rel,  // init_stack_addr (points inside the partition memory)
+									uint32_t stack_rel,
 									uint32_t shadow_stack_rel)
 {
   context_t* ctx;
@@ -103,11 +94,6 @@ uint32_t pok_space_context_create (uint8_t partition_id,
   ctx = (context_t*) pok_bsp_mem_alloc (
     CONTEXT_SIZE );
 
-
-#ifdef POK_NEEDS_DEBUG
-  printf ("ctx starts at: 0x%x \n", (uint32_t)ctx);
-#endif
-
   memset (ctx, 0, sizeof (*ctx));
 
   // Setting shadow stack pointer
@@ -115,6 +101,7 @@ uint32_t pok_space_context_create (uint8_t partition_id,
 
   // Setting stack pointer and spill pointer
   ctx->s6     = (uint32_t) stack_rel;
+  ctx->s5     = (uint32_t) stack_rel;
 
   // Return address
   ctx->r30    = (uint32_t) restore_context;
@@ -123,8 +110,8 @@ uint32_t pok_space_context_create (uint8_t partition_id,
   ctx->s9     = (uint32_t) entry_rel;
 
 #ifdef POK_NEEDS_DEBUG
-  printf ("space_context_create %d: entry=%x stack=%x shadow_stack=%x",
-			 partition_id, entry_rel, stack_rel, shadow_stack_rel);
+  printf ("[DEBUG]\t Creating context for partition %d, ctx: %p, entry: %x, stack: %x, shadow_stack: %x\n",
+		partition_id, ctx, entry_rel, stack_rel, shadow_stack_rel);
 #endif
 
   return (uint32_t)ctx;

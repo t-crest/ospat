@@ -74,9 +74,6 @@ void pok_boot ()
 	// Registers interrupt service routine
 	pok_arch_init();
 
-	// Print system call address for debug purpose
-	printf("system_call address: %p\n", system_call);
-
 #ifdef POK_NEEDS_QEMU_SETUP 
    pok_bsp_init();
 #endif
@@ -100,10 +97,6 @@ void pok_boot ()
 #if defined (POK_NEEDS_PORTS_QUEUEING) || defined (POK_NEEDS_PORTS_SAMPLING)
 	pok_port_init ();
 	pok_queue_init ();
-#endif
-
-#if defined (POK_NEEDS_DEBUG)
-	pok_cons_write ("POK kernel initialized\n", 23);
 #endif
 
 #if defined (POK_NEEDS_TIME) || defined (POK_NEEDS_SCHED) || defined (POK_NEEDS_THREADS)

@@ -92,10 +92,7 @@ extern uint32_t successors_bitmasks[];
  * \brief The array that contains ALL partitions in the system.
  */
 pok_partition_t pok_partitions[POK_CONFIG_NB_PARTITIONS];
-
-
 uint8_t	pok_partitions_index = 0;
-
 
 /**
  **\brief Setup the scheduler used in partition pid
@@ -133,38 +130,6 @@ void pok_partition_setup_scheduler (const uint8_t pid)
 #endif
 }
 
-/* #ifdef POK_NEEDS_ERROR_HANDLING */
-/* NOT USED at the moment */
-/**
- * \brief Reinitialize a partition from scratch
- *
- * This service is only used when we have to retrieve
- * and handle errors.
- */
-
-/*
-void pok_partition_reinit (const uint8_t pid)
-{
-	uint32_t tmp;
-	
-	 // FIXME: reset queueing/sampling ports too
-	 
-	pok_partition_setup_scheduler (pid);
-	pok_partitions[pid].thread_index = 0;
-	pok_partitions[pid].current_thread = pok_partitions[pid].thread_index_low;
-	pok_partitions[pid].prev_current_thread =  IDLE_THREAD;
-	pok_partitions[pid].thread_error = 0;
-	pok_partitions[pid].error_status.failed_thread = 0;
-	pok_partitions[pid].error_status.failed_addr   = 0;
-	pok_partitions[pid].error_status.error_kind    = POK_ERROR_KIND_INVALID;
-	pok_partitions[pid].error_status.msg_size      = 0;
-	pok_loader_load_partition (pid, pok_partitions[pid].base_addr - pok_partitions[pid].base_vaddr, &tmp);
-	pok_partitions[pid].thread_main_entry = tmp;
-	pok_partition_setup_main_thread (pid);
-}
-#endif
-*/
-
 /**
  * Setup the main thread of partition with number \a pid
  */
@@ -194,9 +159,8 @@ pok_ret_t pok_partition_init ()
 {
 	uint8_t     i;
 	uint32_t    threads_index = 0;
-#ifndef POK_ARCH_PATMOS
 	const uint32_t	partition_size[POK_CONFIG_NB_PARTITIONS] = POK_CONFIG_PARTITIONS_SIZE;
-#endif
+
 #if defined (POK_CONFIG_PARTITIONS_LOADADDR) && defined (POK_SKIP_LOADER)
 	const uint32_t	program_loadaddr[POK_CONFIG_NB_PARTITIONS] = POK_CONFIG_PARTITIONS_LOADADDR;
 #endif
@@ -207,9 +171,9 @@ pok_ret_t pok_partition_init ()
 
 	for (i = 0 ; i < POK_CONFIG_NB_PARTITIONS ; i++)
 	{
-#ifdef POK_ARCH_PPC
 		uint32_t size = partition_size[i];
 		uint32_t base_addr = (uint32_t)pok_bsp_mem_alloc(partition_size[i]);
+#ifdef POK_ARCH_PPC
 		uint32_t base_vaddr           = pok_space_base_vaddr(base_addr);
 #endif
 		uint32_t program_entry = 0;
@@ -217,24 +181,22 @@ pok_ret_t pok_partition_init ()
 #if defined (POK_CONFIG_PARTITIONS_LOADADDR) && defined (POK_SKIP_LOADER)
 		&& defined (POK_ARCH_PPC)
 		// One may want to check that consistent addresses were specified
-		printf ("Partition base addr phys=|%x| (user-defined |%x|)",base_addr, program_loadaddr[i]);
+		printf ("[DEBUG]\t Partition base addr phys: %x, user-defined: %x",
+			base_addr, 
+			program_loadaddr[i]);
 #endif
-#ifdef POK_ARCH_PPC		
+
 		pok_partitions[i].base_addr   = base_addr;
 		pok_partitions[i].size        = size;
-#else
-		pok_partitions[i].base_addr   = 0;
-		pok_partitions[i].size        = 0;
-#endif
 
 		pok_partitions[i].sched       = POK_SCHED_RR;
 		pok_partitions[i].partition_id = i;  
 
 #ifdef POK_NEEDS_DEBUG
 #ifdef POK_ARCH_PPC
-		printf ("[XCOV] Partition %d loaded at addr virt=|%x|, phys=|%x|\n", i, base_vaddr, base_addr);
+		printf ("[DEBUG]\t Partition %d loaded at addr virt: %x, phys: %x\n", i, base_vaddr, base_addr);
 #else
-		printf ("[XCOV] Partition %d loaded", i);
+		printf ("[DEBUG]\t  Partition %d loaded", i);
 #endif	
 #endif
 
@@ -291,9 +253,6 @@ pok_ret_t pok_partition_init ()
 		pok_partitions[i].error_status.msg_size         = 0;
 #endif
 	
-#ifdef POK_NEEDS_DEBUG
-		printf("loading partition\n");
-#endif
 		/** This invokation worked just because the base_vaddr was always 0 */
 		
 #ifdef POK_ARCH_PPC		
@@ -303,7 +262,7 @@ pok_ret_t pok_partition_init ()
 #endif
 
 #ifdef POK_NEEDS_DEBUG
-		printf("\t end loading partition\n");
+		printf("[DEBUG]\t Loaded partition %d, entry point %p\n", i, (void*)program_entry);
 #endif
 		/*
 		 * Load the partition in its address space
@@ -362,7 +321,7 @@ pok_ret_t pok_partition_set_mode (const uint8_t pid, const pok_partition_mode_t 
 	{
 		case POK_PARTITION_MODE_NORMAL:
 #ifdef POK_NEEDS_DEBUG
-   printf ("SET_PARTITON_MODE : partition[%d] MODE = NORMAL  \n", pid );
+   printf ("[DEBUG]\t Set partition %d to mode NORMAL\n", pid);
 #endif
 
 			indexLow  = pok_partitions[pid].thread_index_low;
@@ -459,12 +418,11 @@ pok_ret_t pok_partition_set_mode (const uint8_t pid, const pok_partition_mode_t 
 								int position = time % POK_CONFIG_SCHEDULING_MAJOR_FRAME;
 								masks[position][POK_STATE_RUNNABLE] |= the_mask;
   #ifdef POK_NEEDS_DEBUG_O1
-								printf ("Thread %d will be next activated at %d (= %d + %d * k)\n",
+								printf ("[DEBUG_O1]\t Thread %d will be next activated at %d ( = %d + %d * k)\n",
 									thread_id, time,
 									(int)pok_partitions[pok_threads[thread_id].partition].activation,
 									period);
-								printf("Adding to mask %d.. %u\n",position,the_mask);
-  #endif
+								printf("[DEBUG_O1]\t Adding to mask %d: %u\n",position,the_mask);
 							}
 						}
  #endif

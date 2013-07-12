@@ -124,12 +124,10 @@ int pok_arch_set_decr (unsigned int timer)
 	unsigned long long time_cur = get_patmos_tb();
 	int delta = time_new - time_cur;
 	
-	#ifdef POK_NEEDS_DEBUG
-	printf("TIME LAST: %lld", time_last);
-	printf(", TIMER: %u, TIME NEW: %lld",timer,time_new);
-	printf(", TIME CUR: %lld", time_new);
-	printf(", DELTA: %d\n",delta);
-	#endif
+#ifdef POK_NEEDS_DEBUG
+	printf("[DEBUG]\t Setting interrupt interval, time last: %lld, timer: %lld, time new: %lld, time cur: %lld, delta: %lld\n",
+		time_last, timer, time_new, delta);
+#endif
 	last_patmos_tb = time_last;
 	time_last = time_new;
 	dec_updated=TRUE;
@@ -163,7 +161,7 @@ void pok_arch_decr_int (void)
 #endif
 
 #ifdef POK_NEEDS_DEBUG
-	printf ( "DEC interrupt:%u\n" , (unsigned int) pok_tick_counter );
+	printf ("[DEBUG]\t interval interrupt:%u\n" , (unsigned int) pok_tick_counter );
 #endif
 	pok_sched ();
 }
@@ -173,7 +171,8 @@ pok_ret_t pok_bsp_time_init ()
 	int err;
 
 #ifdef POK_NEEDS_DEBUG
-	printf ("TIMER_SETUP: Freq:%d MHZ, Div:%d, Shift:%d\n", POK_BUS_FREQ_MHZ, POK_FREQ_DIV, POK_FREQ_SHIFT);
+	printf ("[DEBUG]\t Initing time, freq:%d MHZ, div:%d, shift:%d\n", 
+		POK_BUS_FREQ_MHZ, POK_FREQ_DIV, POK_FREQ_SHIFT);
 #endif
 
 	time_inter = (POK_BUS_FREQ_HZ /POK_FREQ_DIV) / POK_TIMER_FREQUENCY;
