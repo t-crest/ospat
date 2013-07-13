@@ -56,6 +56,9 @@
 
 #ifdef POK_ARCH_PATMOS
 #include <string.h>	/* For strcmp */
+ #ifdef DEBUG_EVT
+ 	#include <stdio.h>
+ #endif
 #else
 #include <libc/string.h>	/* For strcmp */
 #endif
