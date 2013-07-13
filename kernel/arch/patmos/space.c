@@ -110,8 +110,10 @@ uint32_t pok_space_context_create (uint8_t partition_id,
   ctx->s9     = (uint32_t) entry_rel;
 
 #ifdef POK_NEEDS_DEBUG
-  printf ("[DEBUG]\t Creating context for partition %d, ctx: %p, entry: %x, stack: %x, shadow_stack: %x\n",
-		partition_id, ctx, entry_rel, stack_rel, shadow_stack_rel);
+  printf ("[DEBUG]\t Creating context for partition %d, ctx: %p, entry: %x\n", 
+    partition_id, ctx, entry_rel);
+  printf ("[DEBUG]\t Creating context for partition %d, stack: %x, s_stack: %x\n", 
+    partition_id, stack_rel, shadow_stack_rel);
 #endif
 
   return (uint32_t)ctx;
