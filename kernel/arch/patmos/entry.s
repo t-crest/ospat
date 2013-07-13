@@ -75,8 +75,6 @@ _pok_reset:
 		.size 		_pok_clear_bss, .Ltmp12-_pok_clear_bss
 		.fstart		_pok_clear_bss, .Ltmp12-_pok_clear_bss, 4
 _pok_clear_bss:
-
-
 	.Ltmp44:	
 				li $r3 					= __bss_start
 				li $r5 					= __bss_end
@@ -118,7 +116,8 @@ _interval_ISR:
 		// Bootstrap context switch saving $r1 in the shadow stack
 		sub		$r29			= $r29, 4
 		swm		[$r29 + 0]		= $r1
-		li		$r1				= pok_current_context	
+		li		$r1				= pok_current_context
+		lwc		$r1 			= [$r1 + 0]	
 		
 		// Store general purpose registers
 		swm  	[$r1 + 1] 		= $r2
@@ -155,9 +154,11 @@ _interval_ISR:
 		swm  	[$r1 + 29] 		= $r30
 		swm  	[$r1 + 30] 		= $r31
 
+		mfs	 	$r5 			= $s5
+		mfs	 	$r6 			= $s6
   		sub     $r2 		    = $r5, $r6
   		sspill  $r2
-  		swm     [$r1 + 48] 		= $r2
+  		swm     [$r1 + 47] 		= $r2
 		// Spill everything from the stack cache
 		//sres 	0x3FFFF /* MAX_STACK_CACHE_SIZE */
 		//sfree 	0x3FFFF /* MAX_STACK_CACHE_SIZE */
@@ -205,11 +206,13 @@ _interval_ISR:
 		// Switch to kernel space
 		li		$r29 			= pok_stack_end 
 		mts 	$s6				= $r29
+		mts 	$s5				= $r29
 		li		$r29 			= pok_shadow_stack_end
 
 		// Call interrupt routine 
 		li		$r30 				= _interval_ISR
 		call 	pok_arch_decr_int
+		nop
 		nop
 		nop
 
