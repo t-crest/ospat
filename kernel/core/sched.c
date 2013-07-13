@@ -763,7 +763,6 @@ void pok_sched_context_switch (const uint32_t elected_id)
  */
 void pok_sched_partition_switch (const uint32_t elected_id)
 {
-	printf("pok_sched_partition_switch\n");
 #ifndef POK_ARCH_PATMOS
 	uint32_t *current_sp;
 	uint32_t new_sp;
@@ -782,7 +781,6 @@ void pok_sched_partition_switch (const uint32_t elected_id)
         #else
         printf("[DEBUG]\t <=> NO switch from thread %d\n", POK_SCHED_CURRENT_THREAD);
         printf("[DEBUG]\t <=> NO switch to thread %d\n", elected_id);
-        #endif
         #endif
 #endif
 		return;
@@ -1017,7 +1015,7 @@ pok_ret_t pok_sched_end_period ()
 			POK_SCHED_CURRENT_THREAD, 
 			POK_CURRENT_THREAD.next_activation);
 #endif
-#if POK_NEEDS_SCHED_O1
+#ifdef POK_NEEDS_SCHED_O1
 		// set up new timer for next activation in case of DELAYED_START
 		if(POK_CURRENT_THREAD.timeout != POK_NULL) {
 			pok_sched_set_asynch_event(POK_SCHED_CURRENT_THREAD, POK_CURRENT_THREAD.next_activation, POK_EVENT_DELAYED_START);
@@ -1098,20 +1096,6 @@ void print_queues();
 void remove_from_queue(uint16_t partition_id, pok_thread_t* thread)
 {
 	uint8_t thread_priority = thread->priority;
-
-/*
-#ifdef POK_NEEDS_DEBUG
-	printf ("FPPS_DEBUG::Removing thread %d in partition %d\n",thread->id,partition_id);
-	if (thread == POK_NULL)
-	{
-		printf ("FPPS_DEBUG::WARNING::Thread is POK_NULL!\n");
-	}
-   	if (heads[partition_id] != thread || priority_heads[partition_id][thread_priority] != thread)
-	{
-		printf ("FPPS_DEBUG::WARNING::Thread %d in partition %d has been removed and was not in the head of the queue!\n",thread->id,partition_id);
-	}
-#endif
-*/
 
 	// if the thread is the head of a priority queue the pointer to the head must be updated to the next thread
 	if (priority_heads[partition_id][thread_priority] == thread)

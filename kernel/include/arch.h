@@ -59,6 +59,8 @@
 #include <types.h>
 #include <errno.h>
 
+ #define PATMOS_CONTEXT_SIZE 192
+
 /**
  * Function that initializes architecture concerns.
  */
@@ -130,7 +132,11 @@ pok_ret_t	pok_arch_cache_read_HID0 ();
  */
 pok_ret_t	pok_arch_idle ();
 
+#ifdef POK_ARCH_PATMOS
+void		pok_context_switch (uint32_t old_context);
+#else
 void		pok_context_switch (uint32_t* old_sp, uint32_t new_sp);
+#endif
 
 
 #ifndef POK_ARCH_PATMOS
