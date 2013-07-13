@@ -195,8 +195,6 @@ pok_ret_t pok_partition_init ()
 #ifdef POK_NEEDS_DEBUG
 #ifdef POK_ARCH_PPC
 		printf ("[DEBUG]\t Partition %d loaded at addr virt: %x, phys: %x\n", i, base_vaddr, base_addr);
-#else
-		printf ("[DEBUG]\t  Partition %d loaded", i);
 #endif	
 #endif
 
@@ -423,6 +421,7 @@ pok_ret_t pok_partition_set_mode (const uint8_t pid, const pok_partition_mode_t 
 									(int)pok_partitions[pok_threads[thread_id].partition].activation,
 									period);
 								printf("[DEBUG_O1]\t Adding to mask %d: %u\n",position,the_mask);
+  #endif
 							}
 						}
  #endif
