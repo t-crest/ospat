@@ -76,7 +76,7 @@ void pok_arch_sc_int(	uint32_t num,
 
 	/* prepare syscall_info */
 	syscall_info.partition	= part_id;
-	syscall_info.base_addr	= pok_partitions[part_id].base_addr;
+	syscall_info.base_addr	= 0;
 	syscall_info.thread	 	= POK_SCHED_CURRENT_THREAD;
 
 	/* prepare syscall_args */
