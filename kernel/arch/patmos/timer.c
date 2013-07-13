@@ -125,8 +125,11 @@ int pok_arch_set_decr (unsigned int timer)
 	int delta = time_new - time_cur;
 	
 #ifdef POK_NEEDS_DEBUG
-	printf("[DEBUG]\t Setting interrupt interval, time last: %lld, timer: %lld, time new: %lld, time cur: %lld, delta: %lld\n",
-		time_last, timer, time_new, delta);
+	printf("[DEBUG]\t Setting interrupt interval, time last: %lld, timer: %u\n", 
+		time_last, timer);
+	printf("[DEBUG]\t Setting interrupt interval,  time new: %lld, time cur: %lld\n", 
+		time_new, time_cur);
+	printf("[DEBUG]\t Setting interrupt interval,     delta: %d\n", delta);
 #endif
 	last_patmos_tb = time_last;
 	time_last = time_new;
