@@ -56,15 +56,6 @@
 	#include <libc.h>
 #endif 
 
-#define PATMOS_CONTEXT_SIZE 192
-
-/* Non-volatile context modified to accomodate FP registers
-*  This context has the same structure as jmp_buf defined in
-*  <setjmp.h> with a pointer to the previous frame on the stack
-*  added in tail (back_chain)
-*/
-
-/** Volatile context modified to accomodate caller saved registers */
 typedef struct
 {
 	uint32_t r1;	/*	0	*/
@@ -130,8 +121,7 @@ uint32_t		pok_context_create(uint32_t id,
 						uint32_t shadow_stack_size,
 						uint32_t entry);
 
-void			pok_context_switch(uint32_t* old_sp,
-						uint32_t new_sp);
+void			pok_context_switch(uint32_t old_context);
 
 #ifdef POK_NEEDS_DEBUG
 void 			pok_context_print(context_t* ctx);

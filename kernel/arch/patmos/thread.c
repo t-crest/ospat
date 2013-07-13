@@ -96,7 +96,7 @@ uint32_t		pok_context_create (uint32_t id,
 	ctx->r29		= (uint32_t) (ctx - stack_size - 4);
 
 	#ifdef POK_NEEDS_DEBUG
-	printf ("[DEBUG]\t Creating context for thread %d, ctx: %p, sp: %x\n", id, ctx, ctx->s5);
+	printf ("[DEBUG]\t Creating system context %d, ctx: %p, sp: %x\n", id, ctx, ctx->s5);
 	#endif
 	return (uint32_t)ctx;
 }

@@ -47,6 +47,101 @@
  *		ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *		POSSIBILITY OF SUCH DAMAGE.
  */
+ 
+ /*
+ * Context switch fucntion, r3 holds a pointer to the old context
+ */
+ 		.globl 		pok_context_switch
+		.type 		pok_context_switch,@function
+		.size 		pok_context_switch, .Ltmp6-pok_context_switch
+		.fstart		pok_context_switch, .Ltmp6-pok_context_switch, 4
+pok_context_switch:
+		and 	$r0				= $r0, 0x0
+	
+		swm  	[$r3 + 0] 		= $r1
+		swm  	[$r3 + 1] 		= $r2
+		swm  	[$r3 + 2] 		= $r3
+		swm  	[$r3 + 3] 		= $r4
+		swm  	[$r3 + 4] 		= $r5
+		swm  	[$r3 + 5] 		= $r6
+		swm  	[$r3 + 6] 		= $r7
+		swm  	[$r3 + 7] 		= $r8
+		swm  	[$r3 + 8] 		= $r9
+  		swm  	[$r3 + 9] 		= $r10
+		swm  	[$r3 + 10] 		= $r11
+		swm  	[$r3 + 11] 		= $r12
+		swm  	[$r3 + 12] 		= $r13
+		swm  	[$r3 + 13] 		= $r14
+		swm  	[$r3 + 14] 		= $r15
+		swm  	[$r3 + 15] 		= $r16
+		swm  	[$r3 + 16] 		= $r17
+		swm  	[$r3 + 17] 		= $r18
+		swm  	[$r3 + 18] 		= $r19
+		swm  	[$r3 + 19] 		= $r20
+		swm  	[$r3 + 20] 		= $r21
+		swm  	[$r3 + 21]		= $r22
+		swm  	[$r3 + 22] 		= $r23
+		swm  	[$r3 + 23] 		= $r24
+		swm  	[$r3 + 24] 		= $r25
+		swm  	[$r3 + 25] 		= $r26
+		swm  	[$r3 + 26] 		= $r27
+		swm  	[$r3 + 27] 		= $r28
+		swm  	[$r3 + 28] 		= $r29
+		swm  	[$r3 + 29] 		= $r30
+		swm  	[$r3 + 30] 		= $r31
+
+		mfs	 	$r5 			= $s5
+		mfs	 	$r6 			= $s6
+  		sub     $r2 		    = $r5, $r6
+  		sspill  $r2
+  		swm     [$r3 + 47] 		= $r2
+		// Spill everything from the stack cache
+		//sres 	0x3FFFF /* MAX_STACK_CACHE_SIZE */
+		//sfree 	0x3FFFF /* MAX_STACK_CACHE_SIZE */
+
+		add 	$r2 			= $r30, $r31
+		mts 	$s9 			= $r2
+
+		// Store special purpose registers
+		mfs	 	$r2 			= $s0
+		swm  	[$r3 + 31] 		= $r2
+		mfs		$r2 			= $s1
+		swm  	[$r3 + 32] 		= $r2
+		mfs	 	$r2 			= $s2
+		swm  	[$r3 + 33] 		= $r2
+		mfs	 	$r2 			= $s3
+		swm  	[$r3 + 34] 		= $r2
+		mfs	 	$r2 			= $s4
+		swm  	[$r3 + 35] 		= $r2
+		mfs	 	$r2 			= $s5
+		swm  	[$r3 + 36] 		= $r2
+		mfs	 	$r2 			= $s6
+		swm  	[$r3 + 37] 		= $r2
+		mfs	 	$r2 			= $s7
+		swm  	[$r3 + 38] 		= $r2
+		mfs	 	$r2 			= $s8
+		swm  	[$r3 + 39] 		= $r2
+
+		mfs	 	$r2 			= $s9
+		swm  	[$r3 + 40] 		= $r2
+		mfs	 	$r2 			= $s10
+		swm  	[$r3 + 41] 		= $r2
+		mfs	 	$r2 			= $s11
+		swm  	[$r3 + 42] 		= $r2
+		mfs	 	$r2 			= $s12
+		swm  	[$r3 + 43] 		= $r2
+		mfs	 	$r2 			= $s13
+		swm  	[$r3 + 44] 		= $r2
+		mfs	 	$r2 			= $s14
+		swm  	[$r3 + 45] 		= $r2
+		mfs	 	$r2 			= $s15
+		swm  	[$r3 + 46] 		= $r2
+
+		brcf 	restore_context
+		nop
+		nop
+		nop
+.Ltmp6:
 
  		.globl 		restore_context
 		.type 		restore_context,@function
@@ -57,7 +152,8 @@ restore_context:
 		// Reset r0 to 0
 		and 	$r0				= $r0, 0x0
 
-		li		$r1				= pok_current_context	
+		li		$r1				= pok_current_context
+		lwc		$r1 			= [$r1 + 0]
 
 		lwc  	$r3 			= [$r1 + 2]
 		lwc  	$r4 			= [$r1 + 3]
@@ -89,9 +185,8 @@ restore_context:
 		lwc  	$r30 			= [$r1 + 29]
 		lwc  	$r31 			= [$r1 + 30]
 
-		lwm     $r2           	= [$r1 + 48]
+		lwm     $r2           	= [$r1 + 47]
   		sens    $r2
-		lwc  	$r2 			= [$r1 + 1]
 		// Spill everything from the stack cache
 		//sres 	0x3FFFF /* MAX_STACK_CACHE_SIZE */
 		//sfree 	0x3FFFF /* MAX_STACK_CACHE_SIZE */
@@ -119,14 +214,12 @@ restore_context:
 		lwc  	$r2 			= [$r1 + 42]
 		mts  	$s11 			= $r2
 		lwc  	$r2 			= [$r1 + 43]
-		mts  	$s11 			= $r2
-		lwc  	$r2 			= [$r1 + 44]
 		mts  	$s12 			= $r2
-		lwc  	$r2 			= [$r1 + 45]
+		lwc  	$r2 			= [$r1 + 44]
 		mts  	$s13 			= $r2
-		lwc  	$r2 			= [$r1 + 46]
+		lwc  	$r2 			= [$r1 + 45]
 		mts  	$s14 			= $r2
-		lwc  	$r2 			= [$r1 + 47]
+		lwc  	$r2 			= [$r1 + 46]
 		mts  	$s15 			= $r2
 
 		// Program counter in $r2
