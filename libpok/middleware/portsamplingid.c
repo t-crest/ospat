@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012  University of Padua, Department of Mathematics
+ *  Copyright (c) 2012  University of Padua, Department of Mathematics
  *
  *  This file is free software: you may copy, redistribute and/or modify it
  *  under the terms of the GNU General Public License as published by the

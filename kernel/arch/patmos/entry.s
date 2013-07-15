@@ -1,22 +1,4 @@
 /*
- * Copyright (c) 2012  University of Padua, Department of Mathematics  
- *  
- *  This file is free software: you may copy, redistribute and/or modify it  
- *  under the terms of the GNU General Public License as published by the  
- *  Free Software Foundation, either version 2 of the License, or (at your  
- *  option) any later version.  
- *  
- *  This file is distributed in the hope that it will be useful, but  
- *  WITHOUT ANY WARRANTY; without even the implied warranty of  
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU  
- *  General Public License for more details.  
- *  
- *  You should have received a copy of the GNU General Public License  
- *  along with this program.  If not, see <http://www.gnu.org/licenses/>.  
- *  
- * This file incorporates work covered by the following copyright and  
- * permission notice:  
- *  
  * 		Copyright (c) 2007-2009 POK team
  *
  *		Redistribution and use in source and binary forms, with or without
@@ -47,6 +29,7 @@
  *		ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *		POSSIBILITY OF SUCH DAMAGE.
  */
+
 
 		  .section ".start", "ax"
 /* Entry point, starts the boot sequence */
@@ -255,15 +238,15 @@ system_call:
 .Ltmp2:
 
 	.section ".bss", "aw"
+pok_shadow_stack:
+		.space 8 * 1024
+		.globl pok_shadow_stack_end
+pok_shadow_stack_end:
+
 pok_stack:
 		.space 8 * 1024
 		.globl pok_stack_end
 pok_stack_end:
-
-pok_cache_stack:
-		.space 8 * 1024
-		.globl pok_shadow_stack_end
-pok_shadow_stack_end:
 
 pok_save_area:
 		.space 4 * 8
