@@ -5,23 +5,26 @@
 
 typedef _IODEV unsigned int volatile * const _iodev_ptr_t;
 
+/// linker symbol giving the base address of the timer device
+extern char _timer_base;
+
 // Address to access the cycle counter low register of the RTC
-#define __PATMOS_RTC_CYCLE_LOW_ADDR (0xF0000300)
+#define __PATMOS_RTC_CYCLE_LOW_ADDR (&_timer_base+0x00)
 
 // Address to access the cycle counter up register of the RTC
-#define __PATMOS_RTC_CYCLE_UP_ADDR (0xF0000304)
+#define __PATMOS_RTC_CYCLE_UP_ADDR (&_timer_base+0x04)
 
 // Address to access the time in microseconds low register of the RTC
-#define __PATMOS_RTC_TIME_LOW_ADDR (0xF0000308)
+#define __PATMOS_RTC_TIME_LOW_ADDR (&_timer_base+0x08)
 
 // Address to access the time in microseconds up register of the RTC
-#define __PATMOS_RTC_TIME_UP_ADDR (0xF000030C)
+#define __PATMOS_RTC_TIME_UP_ADDR (&_timer_base+0x0c)
 
 // Address to access the interrupt interval register of the RTC
-#define __PATMOS_RTC_INTERVAL_ADDR (0xF0000310)
+#define __PATMOS_RTC_INTERVAL_ADDR (&_timer_base+0x10)
 
 // Address to access the ISR address register of the RTC
-#define __PATMOS_RTC_ISR_ADDR (0xF0000314)
+#define __PATMOS_RTC_ISR_ADDR (&_timer_base+0x14)
 
 // Macro to read the RTC's cycle counter low register of the RTC
 #define __PATMOS_RTC_RD_CYCLE_LOW(res) res = *((_iodev_ptr_t)__PATMOS_RTC_CYCLE_LOW_ADDR);
