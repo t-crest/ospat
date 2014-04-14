@@ -9,16 +9,16 @@ typedef _IODEV unsigned int volatile * const _iodev_ptr_t;
 extern char _timer_base;
 
 // Address to access the cycle counter low register of the RTC
-#define __PATMOS_RTC_CYCLE_LOW_ADDR (&_timer_base+0x00)
+#define __PATMOS_RTC_CYCLE_UP_ADDR (&_timer_base+0x00)
 
 // Address to access the cycle counter up register of the RTC
-#define __PATMOS_RTC_CYCLE_UP_ADDR (&_timer_base+0x04)
+#define __PATMOS_RTC_CYCLE_LOW_ADDR (&_timer_base+0x04)
 
 // Address to access the time in microseconds low register of the RTC
-#define __PATMOS_RTC_TIME_LOW_ADDR (&_timer_base+0x08)
+#define __PATMOS_RTC_TIME_UP_ADDR (&_timer_base+0x08)
 
 // Address to access the time in microseconds up register of the RTC
-#define __PATMOS_RTC_TIME_UP_ADDR (&_timer_base+0x0c)
+#define __PATMOS_RTC_TIME_LOW_ADDR (&_timer_base+0x0c)
 
 // Address to access the interrupt interval register of the RTC
 #define __PATMOS_RTC_INTERVAL_ADDR (&_timer_base+0x10)
@@ -44,8 +44,11 @@ extern char _timer_base;
 // Macro to write the RTC's cycle counter up register
 #define __PATMOS_RTC_WR_CYCLE_UP(val) *((_iodev_ptr_t)__PATMOS_RTC_CYCLE_UP_ADDR) = val;
 
-// Macro to write the RTC's interrupt interval register
-#define __PATMOS_RTC_WR_INTERVAL(interval) *((_iodev_ptr_t)__PATMOS_RTC_INTERVAL_ADDR) = interval;
+// Macro to write the RTC's interrupt interval in microseconds low register
+#define __PATMOS_RTC_WR_INTERVAL_TIME_LOW(interval) *((_iodev_ptr_t)__PATMOS_RTC_TIME_LOW_ADDR) = interval;
+
+// Macro to write the RTC's interrupt interval in microseconds up register
+#define __PATMOS_RTC_WR_INTERVAL_TIME_UP(interval) *((_iodev_ptr_t)__PATMOS_RTC_TIME_UP_ADDR) = interval;
 
 // Macro to write the RTC's ISR address register
 #define __PATMOS_RTC_WR_ISR(address) *((_iodev_ptr_t)__PATMOS_RTC_ISR_ADDR) = address;
