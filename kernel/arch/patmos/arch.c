@@ -42,6 +42,11 @@
 #include <core/time.h>
 #include <core/thread.h>
 
+ #ifdef POK_NEEDS_DEBUG
+	#include <stdio.h>
+ #endif
+
+#include <machine/exceptions.h>
 #include "rtc.h"
 
 /** Patches for arch.c
@@ -73,9 +78,11 @@ void pok_arch_thread_start() {
 // Inits the architecture, no need to do anything in PATMOS
 pok_ret_t pok_arch_init ()
 {
+
 	// Register _interval_ISR function as interrupt service routine
 	// for timer interrupt
-	__PATMOS_RTC_WR_ISR((unsigned int)_interval_ISR)
+	exc_register(16, _interval_ISR);
+	exc_register(17, _interval_ISR);
 
 	return POK_ERRNO_OK;
 }
@@ -90,6 +97,13 @@ pok_ret_t pok_arch_preempt_disable()
 // TODO: Enable preemption, see method above
 pok_ret_t pok_arch_preempt_enable()
 {
+	// unmask interrupts
+	intr_unmask_all();
+	// clear pending flags
+	intr_clear_all_pending();
+	// enable interrupts
+	intr_enable();
+	
 	return (POK_ERRNO_OK);
 }
 
@@ -103,13 +117,7 @@ pok_ret_t pok_arch_idle()
 		// is enabled or for pok_tick_counter
 		// both of timer.c
 		uint64_t now = POK_GETTICK();
-	
-#ifdef POK_SKIP_IDLE
-		if (POK_CURRENT_PARTITION.head_asynch_queue == POK_NULL)
-		{
-			set_patmos_tb(time_new);
-		}
-#endif
+
 		if (POK_CURRENT_PARTITION.head_asynch_queue != POK_NULL && POK_CURRENT_PARTITION.head_asynch_queue->timestamp <= now)
 		{
 			pok_sched_end_period();
