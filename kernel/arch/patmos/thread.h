@@ -30,7 +30,7 @@
  *		POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef _POK_PATMOS_THREAD_H__
+#ifndef __POK_PATMOS_THREAD_H__
 #define __POK_PATMOS_THREAD_H__
 
 #include <types.h>
