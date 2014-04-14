@@ -44,7 +44,7 @@
 /**
  * From "kernel/include/core/time.h"
  * The rate of the clock in POK
- * #define POK_TIMER_FREQUENCY 1000
+\\\\ * #define POK_TIMER_FREQUENCY 1000
  */
 
 /* Last time when decr was set.  */
@@ -57,25 +57,13 @@ unsigned int next_timer;
 
 unsigned long long time_new;
 
-#ifdef POK_SKIP_IDLE
-
-void set_patmos_tb (unsigned long long time_warp)
-{
-
-	__PATMOS_RTC_WR_CYCLE_LOW((unsigned int)time_warp)
-	__PATMOS_RTC_WR_CYCLE_UP((unsigned int)(time_warp >> 32))
-
-}
-
-#endif
-
 unsigned long long get_patmos_tb(void)
 {
 	unsigned int u;
 	unsigned int l;
 
-	__PATMOS_RTC_RD_CYCLE_LOW(l)
-	__PATMOS_RTC_RD_CYCLE_UP(u)
+	__PATMOS_RTC_RD_TIME_LOW(l)
+	__PATMOS_RTC_RD_TIME_UP(u)
 
 	return (((unsigned long long)u) << 32) | l;
 }
@@ -103,26 +91,24 @@ uint64_t pok_update_tick()
 int pok_arch_set_decr (unsigned int timer)
 {
 	time_new = time_last + timer;
+	//unsigned long long time_cur = get_patmos_tb();
+	//long long delta = time_new - time_cur;
 	unsigned long long time_cur = get_patmos_tb();
-	int delta = time_new - time_cur;
-	
 #ifdef POK_NEEDS_DEBUG
-	printf("[DEBUG]\t Setting interrupt interval, time last: %lld, timer: %u\n", 
-		time_last, timer);
-	printf("[DEBUG]\t Setting interrupt interval,  time new: %lld, time cur: %lld\n", 
-		time_new, time_cur);
-	printf("[DEBUG]\t Setting interrupt interval,     delta: %d\n", delta);
+	printf("[DEBUG]\t At %llu setting timer interrupt at: %llu\n", 
+		time_cur, time_new);
 #endif
 	last_patmos_tb = time_last;
 	time_last = time_new;
 	dec_updated=TRUE;
-	if (delta < 0)
+	if (time_new < time_cur)
 	{
 		return POK_ERRNO_EINVAL;
 	}
 	else
 	{
-		__PATMOS_RTC_WR_INTERVAL(delta)
+		__PATMOS_RTC_WR_INTERVAL_TIME_LOW((unsigned)(time_new))
+		__PATMOS_RTC_WR_INTERVAL_TIME_UP((unsigned)(time_new >> 32))
 		return POK_ERRNO_OK;
 	}
 }
@@ -139,7 +125,7 @@ void pok_arch_decr_int (void)
 #endif
 		//O1 scheduler: count ticks which can be also non-multiple of frequency - FORMERLY: +=1
 
-		pok_tick_counter += next_timer/((POK_BUS_FREQ_HZ /POK_FREQ_DIV) / POK_TIMER_FREQUENCY);
+		pok_tick_counter += next_timer/((1000000U) / POK_TIMER_FREQUENCY);
 
 #ifndef POK_NEEDS_SCHED_O1
 	} while (err != POK_ERRNO_OK);
@@ -159,8 +145,8 @@ pok_ret_t pok_bsp_time_init ()
 	printf ("[DEBUG]\t Initing time, freq:%d MHZ, div:%d, shift:%d\n", 
 		POK_BUS_FREQ_MHZ, POK_FREQ_DIV, POK_FREQ_SHIFT);
 #endif
-
-	time_inter = (POK_BUS_FREQ_HZ /POK_FREQ_DIV) / POK_TIMER_FREQUENCY;
+	// Set the interval according to POK_TIMER_FREQUENCY (Default = 1ms)
+	time_inter = (1000000U) / POK_TIMER_FREQUENCY;
 
 	next_timer = time_inter;
 	time_last = get_patmos_tb ();
