@@ -19,9 +19,9 @@ ifeq ($(ARCH), patmos)
 # PWD is the partition subdir
 # $(@D)/partition_
 $(TARGET): $(OBJS)
-	$(ECHO) $(ECHO_FLAGS) $(ECHO_FLAGS_ONELINE) "[Assemble partition $@ "
-	$(LD) $(LDFLAGS) -o $@ $+ $(POK_PATH)/libpok/libpok.lo
-	if test $$? -eq 0; then $(ECHO) $(ECHO_FLAGS) $(ECHO_GREEN) " OK]"; else $(ECHO) $(ECHO_FLAGS) $(ECHO_RED) " KO]"; fi
+	$(ECHO) $(ECHO_FLAGS) $(ECHO_FLAGS_ONELINE) "[ELF] Assemble partition $@"
+	$(LD) $(LDFLAGS) -v -Xopt -disable-internalize -o $@ $+ $(POK_PATH)/libpok/libpok.lo
+	if test $$? -eq 0; then $(ECHO) $(ECHO_FLAGS) $(ECHO_GREEN) " OK"; else $(ECHO) $(ECHO_FLAGS) $(ECHO_RED) " KO]"; fi
 else
 # PWD is the partition subdir
 # $(@D)/partition_

@@ -24,11 +24,8 @@ endif
 ifeq ($(ARCH), patmos)
 $(LO_TARGET): $(LO_DEPS) $(LO_OBJS)
 	$(ECHO) $(ECHO_FLAGS) $(ECHO_FLAGS_ONELINE) "[LD] $@ "
-	$(LD) -fpatmos-link-object -fpatmos-emit-object $(LDFLAGS) $(LDOPTS) $(LO_DEPS) $(LO_OBJS) -o $(LO_TARGET)
+	$(LD) -fpatmos-link-object -fpatmos-emit-reloc $(LDFLAGS) $(LDOPTS) $(LO_DEPS) $(LO_OBJS) -o $(LO_TARGET)
 	if test $$? -eq 0; then $(ECHO) $(ECHO_FLAGS) $(ECHO_GREEN) " OK "; else $(ECHO) $(ECHO_FLAGS) $(ECHO_RED) " KO"; fi
-
-
-
 endif
 
 %.a: $(LO_DEPS)
@@ -43,6 +40,8 @@ endif
 
 %.o: %.s
 	$(ECHO) $(ECHO_FLAGS) $(ECHO_FLAGS_ONELINE) "[CC] $< "
+	$(ECHO) $(ECHO_FLAGS) $(ECHO_FLAGS_ONELINE) "Building assebly"
+	$(ECHO) $(ECHO_FLAGS) $(ECHO_FLAGS_ONELINE) "$(CC) -c $< -o $@"
 	$(CC) -c $< -o $@
 	if test $$? -eq 0; then $(ECHO) $(ECHO_FLAGS) $(ECHO_GREEN) " OK "; else $(ECHO) $(ECHO_FLAGS) $(ECHO_RED) " KO"; fi
 

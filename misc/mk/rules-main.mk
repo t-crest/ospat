@@ -6,7 +6,7 @@ ifeq ($(ARCH),patmos)
 
 $(TARGET):
 	$(ECHO) $(ECHO_FLAGS) $(ECHO_FLAGS_ONELINE) "[ELF] Building kernel.elf "
-	$(LD) -nostartfiles $(LDFLAGS) -Xgold -T -Xgold $(POK_PATH)/misc/ldscripts/$(ARCH)/$(BSP)/kernel.lds -f $(LDOPTS) -o $@ $(POK_PATH)/kernel/pok.lo $(OBJS)
+	$(LD) -nostartfiles $(LDFLAGS) -Xgold -T -Xgold $(POK_PATH)/misc/ldscripts/$(ARCH)/$(BSP)/kernel.lds $(LDOPTS) -o $@ $(POK_PATH)/kernel/pok.lo $(OBJS)
 	if test $$? -eq 0; then $(ECHO) $(ECHO_FLAGS) $(ECHO_GREEN) " OK "; else $(ECHO) $(ECHO_FLAGS) $(ECHO_RED) " KO"; fi 
 
 else

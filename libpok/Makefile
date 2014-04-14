@@ -31,7 +31,7 @@ endif
 
 libpok.lo: $(LO_DEPS)
 	$(ECHO) $(ECHO_FLAGS) $(ECHO_FLAGS_ONELINE) "[LD] $@ "
-	$(LD) -Xopt -disable-internalize -fpatmos-link-object -fpatmos-emit-object $(LO_DEPS) $(LO_OBJS) -o libpok.lo
+	$(LD) -fpatmos-link-object -fpatmos-emit-reloc $(LO_DEPS) $(LO_OBJS) -o libpok.lo
 	if test $$? -eq 0; then $(ECHO) $(ECHO_FLAGS) $(ECHO_GREEN) " OK "; else $(ECHO) $(ECHO_FLAGS) $(ECHO_RED) " KO"; fi
 
 arch/arch.lo::
