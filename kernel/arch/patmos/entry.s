@@ -42,7 +42,7 @@ base:
 _pok_reset:
 	    li		$r1 				= pok_stack_end 
 		li		$r2 				= pok_shadow_stack_end
-		mov 	$r29 				= $r1
+		mov 	$r31 				= $r1
 		mts 	$st  				= $r2
 		mts 	$ss 				= $r2
 		and 	$r0 				= $r0, 0x0
@@ -72,8 +72,7 @@ _pok_clear_bss:
 				nop
 				nop
 	.Ltmp46:			
-				li $r30					= _pok_clear_bss
-				call 					pok_boot
+				callnd 					pok_boot
 				nop
 				nop
 				nop
@@ -193,7 +192,7 @@ _interval_ISR:
 		li		$r29 			= pok_shadow_stack_end
 
 		// Call interrupt routine 
-		li		$r30 				= _interval_ISR
+		// li		$r30 				= _interval_ISR
 		call 	pok_arch_decr_int
 		nop
 		nop
@@ -231,7 +230,7 @@ system_call:
 	    lws		$r31 = [1]
 	    lws		$r30 = [0]
 	    sfree	2
-	    ret		$r30, $r31
+	    ret
 	    nop
 	    nop
 	    mov		$r1 = $r0
