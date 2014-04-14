@@ -189,7 +189,9 @@ pok_ret_t pok_partition_init ()
 		/* Set the memory space and so on */
       	pok_partitions[i].thread_index_low    = threads_index;
 		pok_partitions[i].nthreads            = ((uint32_t[]) POK_CONFIG_PARTITIONS_NTHREADS) [i];
-
+#ifdef POK_NEEDS_DEBUG
+		printf("[DEBUG]\t Partition %d has %d threads\n", i, pok_partitions[i].nthreads);
+#endif
 #ifdef POK_NEEDS_ERROR_HANDLING
 		if (pok_partitions[i].nthreads <= 1)
 		{
