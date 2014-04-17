@@ -33,20 +33,6 @@ kernel-lds:
 ifeq ($(ARCH), patmos)
 	$(ECHO) "Patmos compilation: creating kernel linker script"
 	cp $(POK_PATH)/misc/ldscripts/$(ARCH)/$(BSP)/kernel_preamble.lds $(POK_PATH)/misc/ldscripts/$(ARCH)/$(BSP)/kernel_t.lds
-#	c=1;for v in $(PARTITIONS_ADDR); do \
-#		$(ECHO) "Base address" $$v "-" $$c ": in kernel.lds" ; \
-#		$(ECHO) "   __part$${c}_start = .; " >> $(POK_PATH)/misc/ldscripts/$(ARCH)/$(BSP)/kernel_t.lds; \
-#		$(ECHO) "   .text.partition_$$c : { " >> $(POK_PATH)/misc/ldscripts/$(ARCH)/$(BSP)/kernel_t.lds; \
-#		$(ECHO) "   *(.text.part1) " >> $(POK_PATH)/misc/ldscripts/$(ARCH)/$(BSP)/kernel_t.lds; \
-#		$(ECHO) "   } " >> $(POK_PATH)/misc/ldscripts/$(ARCH)/$(BSP)/kernel_t.lds; \
-#		$(ECHO) "   . = $$v; " >> $(POK_PATH)/misc/ldscripts/$(ARCH)/$(BSP)/kernel_t.lds; \
-#		$(ECHO) "   .part$$c :  " >> $(POK_PATH)/misc/ldscripts/$(ARCH)/$(BSP)/kernel_t.lds; \
-#		$(ECHO) "   { " >> $(POK_PATH)/misc/ldscripts/$(ARCH)/$(BSP)/kernel_t.lds; \
-#		$(ECHO) "       part$$c.elf(.text) " >> $(POK_PATH)/misc/ldscripts/$(ARCH)/$(BSP)/kernel_t.lds; \
-#		$(ECHO) "   } " >> $(POK_PATH)/misc/ldscripts/$(ARCH)/$(BSP)/kernel_t.lds; \
-		$(ECHO) " " >> $(POK_PATH)/misc/ldscripts/$(ARCH)/$(BSP)/kernel_t.lds; \
-		c=`$(ECHO) $${c}+1 | bc` ; \
-	done
 	cat $(POK_PATH)/misc/ldscripts/$(ARCH)/$(BSP)/kernel_t.lds $(POK_PATH)/misc/ldscripts/$(ARCH)/$(BSP)/kernel_postscript.lds > $(POK_PATH)/misc/ldscripts/$(ARCH)/$(BSP)/kernel.lds ; \
   	cp $(POK_PATH)/misc/ldscripts/$(ARCH)/$(BSP)/kernel.lds ./kernel/kernel.lds ; \
 	rm -f $(POK_PATH)/misc/ldscripts/$(ARCH)/$(BSP)/kernel_t.lds 
