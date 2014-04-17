@@ -202,6 +202,7 @@ static uint32_t read_data(uint32_t size, char* ptr)
 
 void pok_loader_load_partition (const uint32_t part_id, uint32_t *entry)
 {
+	(void) part_id;
 	uint32_t part_entry;
     uint32_t segments;
 
