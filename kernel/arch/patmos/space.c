@@ -79,7 +79,7 @@ uint32_t pok_space_context_create (uint8_t partition_id,
   memset (ctx, 0, sizeof (*ctx));
 
   // Setting shadow stack pointer
-  ctx->r29	  = (uint32_t) shadow_stack_rel; 
+  ctx->r31	  = (uint32_t) shadow_stack_rel; 
 
   // Setting stack pointer and spill pointer
   ctx->s6     = (uint32_t) stack_rel;
