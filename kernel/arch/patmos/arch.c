@@ -59,6 +59,8 @@ extern unsigned long long time_new;
 
 extern void _interval_ISR(void);
 
+extern void _system_call_ISR(void);
+
 // Function used to start a system thread such as the idle thread
 // thread's id and entry point are supposed to be in r18 and r19
 // (see arch/thread.c)
@@ -78,7 +80,9 @@ void pok_arch_thread_start() {
 // Inits the architecture, no need to do anything in PATMOS
 pok_ret_t pok_arch_init ()
 {
-
+	// Register _system_call_ISR function as interrupt service routine
+	// for system call
+	exc_register(3, _system_call_ISR);
 	// Register _interval_ISR function as interrupt service routine
 	// for timer interrupt
 	exc_register(16, _interval_ISR);
