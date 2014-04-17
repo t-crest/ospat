@@ -720,8 +720,9 @@ void pok_sched_context_switch (const uint32_t elected_id)
 	printf("[DEBUG]\t Switch from thread %d, sp: 0x%x\n", POK_SCHED_CURRENT_THREAD, current_sp);
 	printf("[DEBUG]\t Switch to thread %d, sp: 0x%x entry point: 0x%x\n", elected_id, new_sp, pok_threads[elected_id].entry);
     #else
-    printf("[DEBUG]\t Switch from thread %d\n", POK_SCHED_CURRENT_THREAD);
-    printf("[DEBUG]\t Switch to thread %d\n", elected_id);
+    printf("[DEBUG]\t Switch from thread %d to thread %d\n", 
+    	POK_SCHED_CURRENT_THREAD,
+    	elected_id);
     #endif
 #endif	 
 	// Update current thread id now 
@@ -774,8 +775,9 @@ void pok_sched_partition_switch (const uint32_t elected_id)
 	printf("[DEBUG]\t Switch from thread %d, sp: 0x%x\n", POK_SCHED_CURRENT_THREAD, current_sp);
 	printf("[DEBUG]\t Switch to thread %d, sp: 0x%x entry point: 0x%x\n", elected_id, new_sp, pok_threads[elected_id].entry);
     #else
-    printf("[DEBUG]\t Switch from thread %d\n", POK_SCHED_CURRENT_THREAD);
-    printf("[DEBUG]\t Switch to thread %d\n", elected_id);
+    printf("[DEBUG]\t Switch from thread %d to thread %d\n", 
+    	POK_SCHED_CURRENT_THREAD,
+    	elected_id);
     #endif
 #endif	
 	
