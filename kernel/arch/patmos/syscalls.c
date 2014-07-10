@@ -38,7 +38,16 @@
 
 #include <types.h>
 
-void pok_arch_sc_int(	uint32_t num, 
+pok_ret_t pok_arch_sc_int(	uint32_t num, 
+						uint32_t arg1,
+						uint32_t arg2,
+						uint32_t arg3,
+						uint32_t arg4,
+						uint32_t arg5,
+						uint32_t arg6,
+						uint32_t arg7) __attribute__((used));
+
+pok_ret_t pok_arch_sc_int(	uint32_t num, 
 						uint32_t arg1,
 						uint32_t arg2,
 						uint32_t arg3,
@@ -48,6 +57,7 @@ void pok_arch_sc_int(	uint32_t num,
 						uint32_t arg7)
 
 {
+
 	uint8_t				part_id;
 	pok_syscall_info_t	syscall_info;
 	pok_ret_t			syscall_ret;
@@ -73,6 +83,8 @@ void pok_arch_sc_int(	uint32_t num,
 
 	/* prepare syscall_id */
 	syscall_id = (pok_syscall_id_t) num;
+	(void)syscall_ret;
 	/* perform syscall */
 	syscall_ret = pok_core_syscall (syscall_id, &syscall_args, &syscall_info);
+	return syscall_ret;
 }
