@@ -38,7 +38,12 @@
 #include <types.h>
 #include <core/time.h>
 #include <core/event.h>
+#ifdef POK_ARCH_PPC
 #include <libc/string.h>
+#endif
+#ifdef POK_ARCH_PATMOS
+#include <string.h>
+#endif
 #include <middleware/buffer.h>
 
 extern pok_buffer_t	pok_buffers[POK_CONFIG_NB_BUFFERS];

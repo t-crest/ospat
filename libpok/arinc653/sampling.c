@@ -37,8 +37,6 @@
 #include <middleware/port.h>
 #include <arinc653/types.h>
 #include <arinc653/sampling.h>
-#include <libc/string.h>
-
 
 #ifndef POK_NEEDS_PORTS_SAMPLING_DYNAMIC
   extern MESSAGE_ADDR_TYPE *receiving_addresses[];

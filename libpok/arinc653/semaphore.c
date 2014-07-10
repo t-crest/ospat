@@ -38,7 +38,6 @@
 #ifdef POK_NEEDS_ARINC653_SEMAPHORE
 
 #include <types.h>
-#include <libc/string.h>
 #include <arinc653/types.h>
 #include <arinc653/semaphore.h>
 #include <core/semaphore.h>

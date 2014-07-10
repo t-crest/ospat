@@ -35,7 +35,6 @@
 #include <middleware/buffer.h>
 #include <errno.h>
 #include <types.h>
-#include <libc/string.h>
 
 extern pok_buffer_t	 pok_buffers[POK_CONFIG_NB_BUFFERS];
 

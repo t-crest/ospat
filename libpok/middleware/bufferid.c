@@ -35,8 +35,12 @@
 #include <middleware/buffer.h>
 #include <errno.h>
 #include <types.h>
+#ifdef POK_ARCH_PPC
 #include <libc/string.h>
-
+#endif
+#ifdef POK_ARCH_PATMOS
+#include <string.h>
+#endif
 extern pok_buffer_t	pok_buffers[POK_CONFIG_NB_BUFFERS];
 extern char*		pok_buffers_names[POK_CONFIG_NB_BUFFERS];
 

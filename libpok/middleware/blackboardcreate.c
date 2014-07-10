@@ -36,7 +36,12 @@
 
 #include <errno.h>
 #include <types.h>
+#ifdef POK_ARCH_PPC
 #include <libc/string.h>
+#endif
+#ifdef POK_ARCH_PATMOS
+#include <string.h>
+#endif
 #include <core/event.h>
 #include <middleware/blackboard.h>
 

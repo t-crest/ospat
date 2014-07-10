@@ -34,7 +34,6 @@
 
 #include <errno.h>
 #include <types.h>
-#include <libc/string.h>
 #include <middleware/blackboard.h>
 
 extern pok_blackboard_t	 pok_blackboards[POK_CONFIG_NB_BLACKBOARDS];

@@ -36,9 +36,13 @@
 #include <types.h>
 #include <middleware/port.h>
 #include <middleware/buffer.h>
-#include <libc/string.h>
-#include <libc/stdio.h>
-
+#ifdef POK_ARCH_PATMOS
+	#include <string.h>
+	#include <stdio.h>
+#else
+	#include <libc/string.h>
+	#include <libc/stdio.h>
+#endif
 /********************************************************************
 * SERVICE  CREATE_BUFFER
 ********************************************************************/

@@ -35,7 +35,12 @@
 #include <middleware/blackboard.h>
 #include <errno.h>
 #include <types.h>
+#ifdef POK_ARCH_PPC
 #include <libc/string.h>
+#endif
+#ifdef POK_ARCH_PATMOS
+#include <string.h>
+#endif
 
 extern pok_blackboard_t		pok_blackboards[POK_CONFIG_NB_BLACKBOARDS];
 extern char*				pok_blackboards_names[POK_CONFIG_NB_BLACKBOARDS];

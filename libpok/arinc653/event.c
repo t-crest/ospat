@@ -41,6 +41,7 @@
  #ifdef DEBUG_EVT
  	#include <stdio.h>
  #endif
+ 	#include <stdio.h>
 #else
 #include <libc/string.h>	/* For strcmp */
 #endif
@@ -116,6 +117,7 @@ void CREATE_EVENT (EVENT_NAME_TYPE EVENT_NAME,
 
 	if (core_ret != POK_ERRNO_OK)
 	{
+		printf("Error %d\n", core_ret);
 		*RETURN_CODE = INVALID_PARAM;
 		return;
 	}

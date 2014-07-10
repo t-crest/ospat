@@ -37,7 +37,6 @@
 #include <arinc653/error.h>
 #include <core/error.h>
 #include <core/syscall.h>
-#include <libc/string.h>
 
 
 /********************************************************************
