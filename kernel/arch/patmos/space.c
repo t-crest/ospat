@@ -90,6 +90,8 @@ uint32_t pok_space_context_create (uint8_t partition_id,
 
   // Return from interrupt address (entry point of the thread)
   ctx->s9     = (uint32_t) entry_rel;
+  // Initial exception state has interrupts enabled
+  ctx->exc    = 0x1;
 
 #ifdef POK_NEEDS_DEBUG
   printf ("[DEBUG]\t Creating context for partition %d, ctx: %p, entry: %x\n", 
