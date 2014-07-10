@@ -1,0 +1,39 @@
+#include <arinc653/types.h>
+#include <arinc653/time.h>
+#include "deployment.h"
+#ifdef POK_ARCH_PATMOS
+	#include <stdio.h>
+#endif
+
+
+void* thr1_1_job ()
+{
+	RETURN_CODE_TYPE ret;
+	while (1)
+	{
+		printf("\t[Thread 1] Partition n. 1 - Thread n.1\n");
+
+		/***************************************************************/
+		/* Message processing code should be placed here               */
+		/***************************************************************/
+
+		PERIODIC_WAIT (&(ret));
+	}
+}
+
+void* thr1_2_job ()
+{
+	RETURN_CODE_TYPE ret;
+	while (1)
+	{
+		printf("\t[Thread 2] Partition n. 1 - Thread n.2\n");
+
+		/***************************************************************/
+		/* Message processing code should be placed here               */
+		/***************************************************************/
+
+		PERIODIC_WAIT (&(ret));
+	}
+}
+
+
