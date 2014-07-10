@@ -36,7 +36,7 @@
 
 #include <stdio.h>
 
-// defined in a load script
+// defined in a link script
 extern char _end[];
 
 static char *heap_end = _end;
