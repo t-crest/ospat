@@ -69,7 +69,6 @@ ifeq ($(ARCH), patmos)
 		$(ECHO) "}" >> $(POK_PATH)/misc/ldscripts/$(ARCH)/$(BSP)/kernel_partitions.lds ; \
 		c=`$(ECHO) $${c}+1 | bc` ; \
 	done
-	cp $(POK_PATH)/misc/ldscripts/$(ARCH)/$(BSP)/kernel_preamble.lds $(POK_PATH)/misc/ldscripts/$(ARCH)/$(BSP)/kernel_t.lds
 	cat $(POK_PATH)/misc/ldscripts/$(ARCH)/$(BSP)/kernel_preamble.lds $(POK_PATH)/misc/ldscripts/$(ARCH)/$(BSP)/kernel_partitions.lds $(POK_PATH)/misc/ldscripts/$(ARCH)/$(BSP)/kernel_postscript.lds > $(POK_PATH)/misc/ldscripts/$(ARCH)/$(BSP)/kernel.lds ; 
 else
 # Handle kernel linker script
