@@ -340,7 +340,7 @@ void pok_thread_init(void)
 								shadow_stack_addr);		
 
 #ifdef POK_NEEDS_DEBUG	
-	printf("[DEBUG]\t Created thread %d for partition %d with entry %d\n", id, partition_id, (uint32_t)attr->entry);
+	printf("[DEBUG]\t Created thread %d for partition %d with entry %p\n", id, partition_id, (void*)attr->entry);
 #endif
 #endif
 
