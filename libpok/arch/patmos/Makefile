@@ -5,12 +5,11 @@ include $(TOPDIR)/misc/mk/config.mk
 
 LO_TARGET=	patmos.lo
 
-LO_OBJS= arch.o \
-		syscall.o
+LO_OBJS= arch.o
 
 LO_DEPS=	
 
-all: $(LO_TARGET)
+all: $(LO_TARGET) syscall.o
 
 .PHONY: clean distclean depend all
 

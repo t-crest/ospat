@@ -19,23 +19,58 @@ KERNEL=kernel/kernel.lo
 # Build only kernel
 # all: build-lds build-kernel $(TARGET)
 # Build kernel and partitions
+ifeq ($(ARCH), patmos)
+all: partitions-lds partitions sections kernel-lds build-kernel $(TARGET)
+else
 all: build-lds build-kernel partitions $(TARGET)
+endif
 
 ifeq ($(ARCH), patmos)
 # In Patmos we only need one linker script
-build-lds: kernel-lds
+build-lds: partitions-lds 
 else
 build-lds: kernel-lds	partitions-lds
+endif
+
+ifeq ($(ARCH), patmos)
+sections:
+	$(ECHO) "Extracting loadable sections from partitions"
+	c=1;for v in $(PARTITIONS); do \
+		$(POK_PATH)/elf2uart/build/elf2uart part$${c}/part$${c}.elf -o part$$c ; \
+		entry=`cat part$${c}_entry` ; \
+		cat kernel/deployment.h.tmp > kernel/deployment.h ; \
+		sed -i "s/PART_ENTRY_$${c}/$${entry}/g" kernel/deployment.h ; \
+    c=`$(ECHO) $${c}+1 | bc` ; \
+	done
+
 endif
 
 kernel-lds:  
 # Handle Patmos linker script
 ifeq ($(ARCH), patmos)
 	$(ECHO) "Patmos compilation: creating kernel linker script"
+	$(ECHO) "" > $(POK_PATH)/misc/ldscripts/$(ARCH)/$(BSP)/kernel_partitions.lds ; \
+	c=1;for v in $(PARTITIONS); do \
+		text_address=`$(ECHO) $${c}*20000 | bc`; \
+		data_address=`$(ECHO) $${c}*40000 | bc`; \
+		cat part$${c}_sec1 | hexdump -v -e '"BYTE(0x" 1/1 "%02X" ")\n"' > part$${c}_sec1.ld ; \
+		cat part$${c}_sec2 | hexdump -v -e '"BYTE(0x" 1/1 "%02X" ")\n"' > part$${c}_sec2.ld ; \
+		text_address=". = SEGMENT_START(\".text0\", 0x$${text_address});" ; \
+		text_segment=".text0 : {" ; \
+		data_address=". = SEGMENT_START(\".data0\", 0x$${data_address});" ; \
+		data_segment=".data0 : {" ; \
+		$(ECHO) $${text_address} >> $(POK_PATH)/misc/ldscripts/$(ARCH)/$(BSP)/kernel_partitions.lds ; \
+		$(ECHO) $${text_segment} >> $(POK_PATH)/misc/ldscripts/$(ARCH)/$(BSP)/kernel_partitions.lds ; \
+		cat part$${c}_sec1.ld >> $(POK_PATH)/misc/ldscripts/$(ARCH)/$(BSP)/kernel_partitions.lds ; \
+		$(ECHO) "}" >> $(POK_PATH)/misc/ldscripts/$(ARCH)/$(BSP)/kernel_partitions.lds ; \
+		$(ECHO) $${data_address} >> $(POK_PATH)/misc/ldscripts/$(ARCH)/$(BSP)/kernel_partitions.lds ; \
+		$(ECHO) $${data_segment} >> $(POK_PATH)/misc/ldscripts/$(ARCH)/$(BSP)/kernel_partitions.lds ; \
+		cat part$${c}_sec2.ld >> $(POK_PATH)/misc/ldscripts/$(ARCH)/$(BSP)/kernel_partitions.lds ; \
+		$(ECHO) "}" >> $(POK_PATH)/misc/ldscripts/$(ARCH)/$(BSP)/kernel_partitions.lds ; \
+		c=`$(ECHO) $${c}+1 | bc` ; \
+	done
 	cp $(POK_PATH)/misc/ldscripts/$(ARCH)/$(BSP)/kernel_preamble.lds $(POK_PATH)/misc/ldscripts/$(ARCH)/$(BSP)/kernel_t.lds
-	cat $(POK_PATH)/misc/ldscripts/$(ARCH)/$(BSP)/kernel_t.lds $(POK_PATH)/misc/ldscripts/$(ARCH)/$(BSP)/kernel_postscript.lds > $(POK_PATH)/misc/ldscripts/$(ARCH)/$(BSP)/kernel.lds ; \
-  	cp $(POK_PATH)/misc/ldscripts/$(ARCH)/$(BSP)/kernel.lds ./kernel/kernel.lds ; \
-	rm -f $(POK_PATH)/misc/ldscripts/$(ARCH)/$(BSP)/kernel_t.lds 
+	cat $(POK_PATH)/misc/ldscripts/$(ARCH)/$(BSP)/kernel_preamble.lds $(POK_PATH)/misc/ldscripts/$(ARCH)/$(BSP)/kernel_partitions.lds $(POK_PATH)/misc/ldscripts/$(ARCH)/$(BSP)/kernel_postscript.lds > $(POK_PATH)/misc/ldscripts/$(ARCH)/$(BSP)/kernel.lds ; 
 else
 # Handle kernel linker script
 ifeq ($(shell grep -i POK_NEEDS_QEMU_SETUP $(HEADERFILE)|grep -v "/"),)
@@ -76,6 +111,21 @@ endif
 endif
 
 partitions-lds:
+ifeq ($(ARCH), patmos)
+	$(ECHO) "Creating partition linker scripts"
+	c=1;for v in $(PARTITIONS); do \
+		text_address=`$(ECHO) $${c}*20000 | bc`; \
+		data_address=`$(ECHO) $${c}*40000 | bc`; \
+		$(ECHO) "Base text address 0x" $$text_address ": in ./part"$$c"/partition_"$$c".lds" ; \
+		$(ECHO) "Base data address 0x" $$data_address ": in ./part"$$c"/partition_"$$c".lds" ; \
+		cp $(POK_PATH)/misc/ldscripts/$(ARCH)/$(BSP)/partition_template.lds ./part$$c/partition_$${c}_t.lds ; \
+		sed s/TEXT_ADDRESS/0x$$text_address/ ./part$$c/partition_$${c}_t.lds > ./part$$c/partition_$${c}_t2.lds; \
+		sed s/DATA_ADDRESS/0x$$data_address/ ./part$$c/partition_$${c}_t2.lds > ./part$$c/partition.lds; \
+		rm -f ./part$$c/partition_$${c}_t.lds; \
+		rm -f ./part$$c/partition_$${c}_t2.lds; \
+    c=`$(ECHO) $${c}+1 | bc` ; \
+	done
+else
 # Handle partitions linker scripts
 ifeq ($(shell grep -i POK_SKIP_LOADER $(HEADERFILE)|grep -v "/"),)
 	$(eval PARTITION_LDS=partition_template.lds)
@@ -101,6 +151,7 @@ else
 		rm -f ./part$$c/partition_.lds ; \
     c=`$(ECHO) $${c}+1 | bc` ; \
 	done
+endif
 endif
 
 build-kernel:

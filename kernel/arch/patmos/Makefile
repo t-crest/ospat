@@ -5,9 +5,7 @@ include $(TOPDIR)/misc/mk/config.mk
 
 LO_TARGET=	patmos.lo
 
-LO_OBJS=	entry.o \
-		timer.o \
-		cswitch.o \
+LO_OBJS= timer.o \
 		thread.o \
 		space.o \
 		syscalls.o \
@@ -15,7 +13,7 @@ LO_OBJS=	entry.o \
 
 LO_DEPS=	$(BSP)/$(BSP).lo
 
-all: $(LO_TARGET)
+all: $(LO_TARGET) entry.o cswitch.o
 
 $(BSP)/$(BSP).lo::
 	$(CD) $(BSP) && $(MAKE)
