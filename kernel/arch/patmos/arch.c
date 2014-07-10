@@ -55,17 +55,23 @@
  *  [3] pok_arch_cache_freeze/unfreeze procedures
  */
 
+unsigned* _loader_baseaddr;
+/// _loader_off - the offset of the loading function (one per core)
+unsigned* _loader_off;
+
 extern unsigned long long time_new;
 
 extern void _interval_ISR(void);
 
 extern void _system_call_ISR(void);
 
+extern void pok_clear_bss(void) __attribute__((used));
+
 // Function used to start a system thread such as the idle thread
 // thread's id and entry point are supposed to be in r18 and r19
 // (see arch/thread.c)
 void pok_arch_thread_start() {
-	
+
 	uint32_t entry;
 	uint32_t id;
 
@@ -98,13 +104,14 @@ pok_ret_t pok_arch_preempt_disable()
 	return (POK_ERRNO_OK);
 }
 
+pok_ret_t pok_arch_preempt_enable() __attribute__((used));
 // TODO: Enable preemption, see method above
 pok_ret_t pok_arch_preempt_enable()
 {
-	// unmask interrupts
-	intr_unmask_all();
 	// clear pending flags
 	intr_clear_all_pending();
+	// unmask interrupts
+	intr_unmask_all();
 	// enable interrupts
 	intr_enable();
 	
