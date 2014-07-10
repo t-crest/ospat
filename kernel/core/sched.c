@@ -61,7 +61,9 @@
 #include <dependencies.h>
 
 #ifdef POK_ARCH_PATMOS
-#include <stdio.h>
+ #ifdef POK_NEEDS_DEBUG
+	#include <stdio.h>
+ #endif
 #else
 #include <libc.h>
 #endif
@@ -120,7 +122,7 @@ uint32_t current_thread = KERNEL_THREAD;
  */
 #ifdef POK_ARCH_PATMOS
 
-uint32_t 	pok_current_context;
+uint32_t 	pok_current_context __attribute__((used));
 
 #endif
 
@@ -720,7 +722,7 @@ void pok_sched_context_switch (const uint32_t elected_id)
 	printf("[DEBUG]\t Switch from thread %d, sp: 0x%x\n", POK_SCHED_CURRENT_THREAD, current_sp);
 	printf("[DEBUG]\t Switch to thread %d, sp: 0x%x entry point: 0x%x\n", elected_id, new_sp, pok_threads[elected_id].entry);
     #else
-    printf("[DEBUG]\t Switch from thread %d to thread %d\n", 
+    printf("[DEBUG]\t Thread switch from thread %d to thread %d\n", 
     	POK_SCHED_CURRENT_THREAD,
     	elected_id);
     #endif
@@ -775,7 +777,7 @@ void pok_sched_partition_switch (const uint32_t elected_id)
 	printf("[DEBUG]\t Switch from thread %d, sp: 0x%x\n", POK_SCHED_CURRENT_THREAD, current_sp);
 	printf("[DEBUG]\t Switch to thread %d, sp: 0x%x entry point: 0x%x\n", elected_id, new_sp, pok_threads[elected_id].entry);
     #else
-    printf("[DEBUG]\t Switch from thread %d to thread %d\n", 
+    printf("[DEBUG]\t Partition switch from thread %d to thread %d\n", 
     	POK_SCHED_CURRENT_THREAD,
     	elected_id);
     #endif
