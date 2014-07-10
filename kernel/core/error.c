@@ -38,7 +38,9 @@
 #include <core/partition.h>
  
 #ifdef		POK_ARCH_PATMOS
-#include <stdio.h>
+ #ifdef POK_NEEDS_DEBUG
+	#include <stdio.h>
+ #endif
 #else
 #include <libc.h>
 #endif 

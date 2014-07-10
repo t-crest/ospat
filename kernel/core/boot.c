@@ -47,10 +47,7 @@
 #include <core/lockobj.h>
 #include <dependencies.h>
 
- #include <stdio.h>
- extern void system_call();
-
-void pok_boot ()
+void pok_boot () 
 {
 
 	// Registers interrupt service routine
@@ -86,4 +83,5 @@ void pok_boot ()
 #endif
 
 	pok_arch_preempt_enable();
+
 }
