@@ -36,7 +36,9 @@
 #include <core/time.h>
 #include <core/sched.h>
 #include <dependencies.h>
-#include <stdio.h>
+#ifdef POK_NEEDS_DEBUG
+	#include <stdio.h>
+#endif
 #include <bsp.h>
 
 #include "rtc.h"
@@ -93,11 +95,11 @@ int pok_arch_set_decr (unsigned int timer)
 	time_new = time_last + timer;
 	//unsigned long long time_cur = get_patmos_tb();
 	//long long delta = time_new - time_cur;
+	#ifdef POK_NEEDS_DEBUG
+	printf("[DEBUG]\t Setting timer interrupt at: %llu\n", time_new);
+	#endif
 	unsigned long long time_cur = get_patmos_tb();
-#ifdef POK_NEEDS_DEBUG
-	printf("[DEBUG]\t At %llu setting timer interrupt at: %llu\n", 
-		time_cur, time_new);
-#endif
+
 	last_patmos_tb = time_last;
 	time_last = time_new;
 	dec_updated=TRUE;
@@ -113,9 +115,11 @@ int pok_arch_set_decr (unsigned int timer)
 	}
 }
 
+void pok_arch_decr_int (void) __attribute__((used));
 /* Called by the interrupt handled.  */
 void pok_arch_decr_int (void)
 {
+
 	dec_updated=FALSE;
 #ifndef POK_NEEDS_SCHED_O1
 	int err;
