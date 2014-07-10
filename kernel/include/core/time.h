@@ -65,7 +65,11 @@
 //	#define POK_TIMER_FREQUENCY 5
 	#define POK_TIMER_FREQUENCY 1
 #else
-	#define POK_TIMER_FREQUENCY 1000
+ #ifdef POK_ARCH_PATMOS
+	#define POK_TIMER_FREQUENCY 200
+ #else
+ 	#define POK_TIMER_FREQUENCY 1000
+ #endif
 #endif
 extern uint64_t pok_tick_counter;
 
@@ -130,6 +134,8 @@ typedef struct
 * Patmos compiler does not support inlining
 */
 unsigned long long get_patmos_tb (void);
+
+unsigned int get_patmos_exc_register (void);
 #endif
 
 
