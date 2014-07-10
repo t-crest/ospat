@@ -45,6 +45,6 @@
  * system requirements (the POK_NEEDS_* maccro).
  */
 
-void pok_boot();
+void pok_boot() __attribute__((used));
 
 #endif
