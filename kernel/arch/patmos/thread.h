@@ -95,6 +95,7 @@ typedef struct
 	uint32_t s15;	/*	184	*/
 
 	uint32_t ssize; /*	188	*/
+	uint32_t exc;
 
 } context_t;
 

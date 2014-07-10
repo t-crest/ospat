@@ -76,6 +76,9 @@ uint32_t		pok_context_create (uint32_t id,
 	ctx->s6			= (uint32_t) (ctx - 4);
 
 	ctx->r31		= (uint32_t) (ctx - stack_size - 4);
+	
+  // Initial exception state has interrupts enabled
+  ctx->exc    = 0x1;
 
 	#ifdef POK_NEEDS_DEBUG
 	printf ("[DEBUG]\t Creating system context %d, ctx: %p, sp: %x\n", id, ctx, ctx->s5);
