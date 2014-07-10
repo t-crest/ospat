@@ -47,14 +47,16 @@
 #include <dependencies.h>
 #include <core/sched.h>
 #include <core/error.h>
-#include <core/debug.h>
 #include <core/thread.h>
 #include <core/loader.h>
 #include <core/partition.h>
 
 #if defined (POK_NEEDS_CONSOLE) || defined (POK_NEEDS_DEBUG) 
 #ifdef POK_ARCH_PATMOS
-#include <stdio.h>
+ #ifdef POK_NEEDS_DEBUG
+	#include <stdio.h>
+ 	#include <core/debug.h>
+ #endif
 #else
 #include <libc.h>
 #endif
@@ -239,7 +241,8 @@ pok_ret_t pok_partition_init ()
 #ifdef POK_ARCH_PPC		
 		pok_loader_load_partition (i, base_addr, &program_entry);
 #else
-		pok_loader_load_partition (i, &program_entry);
+		//pok_loader_load_partition (i, &program_entry);
+		program_entry = ((uint32_t[]) POK_PARTITION_ENTRIES) [i];
 #endif
 
 #ifdef POK_NEEDS_DEBUG
@@ -344,6 +347,7 @@ pok_ret_t pok_partition_set_mode (const uint8_t pid, const pok_partition_mode_t 
 						/* set the thread bit in the sporadic_mask bitmask */
 						pok_partitions[pid].sporadic_bitmask |= (1 << (pok_threads[thread_id].pos - pok_partitions[pid].thread_index_low));
   #endif
+
 						if(pok_threads[thread_id].timeout != POK_NULL)
 							// initiate a time counter with duration DELAY_TIME;
 							pok_sched_set_asynch_event(thread_id,
@@ -378,7 +382,6 @@ pok_ret_t pok_partition_set_mode (const uint8_t pid, const pok_partition_mode_t 
 						pok_threads[thread_id].next_activation = pok_partitions[pok_threads[thread_id].partition].activation 
 								+ get_partition_period(pok_threads[thread_id].partition);
  #ifdef POK_NEEDS_SCHED_O1
-
 						if(pok_threads[thread_id].timeout != POK_NULL)
 						{
 							pok_threads[thread_id].next_activation += pok_threads[thread_id].timeout->timer;
@@ -398,7 +401,7 @@ pok_ret_t pok_partition_set_mode (const uint8_t pid, const pok_partition_mode_t 
 							{
 								int position = time % POK_CONFIG_SCHEDULING_MAJOR_FRAME;
 								masks[position][POK_STATE_RUNNABLE] |= the_mask;
-  #ifdef POK_NEEDS_DEBUG_O1
+  #ifdef POK_NEEDS_O1_DEBUG
 								printf ("[DEBUG_O1]\t Thread %d will be next activated at %d ( = %d + %d * k)\n",
 									thread_id, time,
 									(int)pok_partitions[pok_threads[thread_id].partition].activation,

@@ -54,7 +54,9 @@
 #include <core/thread.h>
 #include <core/lockobj.h>
 #ifdef POK_ARCH_PATMOS
-#include <stdio.h>
+ #ifdef DEBUG_LOCK
+	#include <stdio.h>
+ #endif
 #else
 #include <libc.h>
 #endif
@@ -358,7 +360,6 @@ pok_ret_t pok_lockobj_eventsignal (pok_lockobj_t* obj)
 		sporadic_index = get_thread_index_deBruijn(current_runnables) + POK_CURRENT_PARTITION.thread_index_low;
 		pok_threads[sporadic_index].deadline = current_time + pok_threads_deadline[pok_threads[sporadic_index].id];
 	}
-
 	return POK_ERRNO_OK;
  #endif /* end ifndef POK_NEEDS_SCHED_O1_SPLIT */
 }
