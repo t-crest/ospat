@@ -96,7 +96,7 @@ int pok_arch_set_decr (unsigned int timer)
 	//unsigned long long time_cur = get_patmos_tb();
 	//long long delta = time_new - time_cur;
 	#ifdef POK_NEEDS_DEBUG
-	printf("[DEBUG]\t Setting timer interrupt at: %llu\n", time_new);
+	//printf("[DEBUG]\t Setting timer interrupt at: %llu\n", time_new);
 	#endif
 	unsigned long long time_cur = get_patmos_tb();
 
