@@ -60,6 +60,7 @@
 #else
 #include <libc.h>
 #endif
+ #include <stdio.h>
 
 pok_lockobj_t	pok_partitions_lockobjs[POK_CONFIG_NB_LOCKOBJECTS];
 
@@ -298,7 +299,6 @@ pok_ret_t pok_lockobj_eventwait (pok_lockobj_t* obj, const uint64_t timeout)
 */
 pok_ret_t pok_lockobj_eventsignal (pok_lockobj_t* obj)
 {
-
 	//SPIN_LOCK (obj->eventspin);
  #ifndef POK_NEEDS_SCHED_O1_SPLIT
 	uint32_t tmp;
@@ -321,12 +321,12 @@ pok_ret_t pok_lockobj_eventsignal (pok_lockobj_t* obj)
 			pok_sched_unlock_thread (tmp);
 			//SPIN_UNLOCK (obj->eventspin);
 			obj->is_locked = FALSE;
-			return POK_ERRNO_OK;
 		}
  	} /* for */
  	obj->is_locked = FALSE;
 	/* SPIN_UNLOCK (obj->eventspin); */
-	return POK_ERRNO_NOTFOUND;
+	if (found == 0)
+		return POK_ERRNO_NOTFOUND;
 
  #else /* POK_NEEEDS_SCHED_O1_SPLIT is defined */
 
@@ -360,8 +360,9 @@ pok_ret_t pok_lockobj_eventsignal (pok_lockobj_t* obj)
 		sporadic_index = get_thread_index_deBruijn(current_runnables) + POK_CURRENT_PARTITION.thread_index_low;
 		pok_threads[sporadic_index].deadline = current_time + pok_threads_deadline[pok_threads[sporadic_index].id];
 	}
-	return POK_ERRNO_OK;
+	
  #endif /* end ifndef POK_NEEDS_SCHED_O1_SPLIT */
+	return POK_ERRNO_OK;
 }
 
 /*
@@ -560,7 +561,7 @@ pok_ret_t pok_lockobj_partition_wrapper (const pok_lockobj_id_t id, const pok_lo
 	/* First, we check that the locked object belongs to the partition
 	 * If not, we return an error
 	 */
-	pok_ret_t ret;
+	pok_ret_t ret = 0;
 
 	if (id < pok_partitions[POK_SCHED_CURRENT_PARTITION].lockobj_index_low)
 	{
@@ -600,9 +601,10 @@ pok_ret_t pok_lockobj_partition_wrapper (const pok_lockobj_id_t id, const pok_lo
 
 		case LOCKOBJ_OPERATION_SIGNAL:
 			{
-				ret = pok_lockobj_eventsignal (&pok_partitions_lockobjs[id]);
+				ret = pok_lockobj_eventsignal (&pok_partitions_lockobjs[id]);		
 				return ret;
 				break;
+
 			}
 
 		case LOCKOBJ_OPERATION_BROADCAST:
