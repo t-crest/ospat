@@ -14,7 +14,7 @@ SECTIONS
    __bss_end = .;
   }
 
-    . = SEGMENT_START(".text", 0x1C0000);
+  . = SEGMENT_START(".text", 0x20000);
   .text : { 
   *(.text .text.*) 
   }
