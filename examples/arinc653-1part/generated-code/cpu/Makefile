@@ -33,38 +33,44 @@ endif
 ifeq ($(ARCH), patmos)
 sections:
 	$(ECHO) "Extracting loadable sections from partitions"
+	cat kernel/deployment.h.tmp > kernel/deployment.h
 	c=1;for v in $(PARTITIONS); do \
 		$(POK_PATH)/elf2uart/build/elf2uart part$${c}/part$${c}.elf -o part$$c ; \
 		entry=`cat part$${c}_entry` ; \
-		cat kernel/deployment.h.tmp > kernel/deployment.h ; \
+		rm part$${c}_entry ; \
 		sed -i "s/PART_ENTRY_$${c}/$${entry}/g" kernel/deployment.h ; \
     c=`$(ECHO) $${c}+1 | bc` ; \
 	done
-
 endif
 
 kernel-lds:  
 # Handle Patmos linker script
 ifeq ($(ARCH), patmos)
 	$(ECHO) "Patmos compilation: creating kernel linker script"
-	$(ECHO) "" > $(POK_PATH)/misc/ldscripts/$(ARCH)/$(BSP)/kernel_partitions.lds ; \
-	c=1;for v in $(PARTITIONS); do \
-		text_address=`$(ECHO) $${c}*20000 | bc`; \
-		data_address=`$(ECHO) $${c}*40000 | bc`; \
+	$(ECHO) "" > $(POK_PATH)/misc/ldscripts/$(ARCH)/$(BSP)/kernel_partitions.lds
+	c=1;last_text=44000;for v in $(PARTITIONS); do \
+		text_address=`$(ECHO) $${last_text} | bc`; \
+		data_address=`$(ECHO) $${text_address}+20000 | bc`; \
+		last_text=`$(ECHO) $${data_address}+1000 | bc`; \
 		cat part$${c}_sec1 | hexdump -v -e '"BYTE(0x" 1/1 "%02X" ")\n"' > part$${c}_sec1.ld ; \
 		cat part$${c}_sec2 | hexdump -v -e '"BYTE(0x" 1/1 "%02X" ")\n"' > part$${c}_sec2.ld ; \
-		text_address=". = SEGMENT_START(\".text0\", 0x$${text_address});" ; \
-		text_segment=".text0 : {" ; \
-		data_address=". = SEGMENT_START(\".data0\", 0x$${data_address});" ; \
-		data_segment=".data0 : {" ; \
-		$(ECHO) $${text_address} >> $(POK_PATH)/misc/ldscripts/$(ARCH)/$(BSP)/kernel_partitions.lds ; \
+		rm part$${c}_sec0 ; \
+		rm part$${c}_sec1 ; \
+		rm part$${c}_sec2 ; \
+		text_address_string=". = SEGMENT_START(\".text$${c}\", 0x$${text_address});" ; \
+		text_segment=".text$${c} : {" ; \
+		data_address_string=". = SEGMENT_START(\".data$${c}\", 0x$${data_address});" ; \
+		data_segment=".data$${c} : {" ; \
+		$(ECHO) $${text_address_string} >> $(POK_PATH)/misc/ldscripts/$(ARCH)/$(BSP)/kernel_partitions.lds ; \
 		$(ECHO) $${text_segment} >> $(POK_PATH)/misc/ldscripts/$(ARCH)/$(BSP)/kernel_partitions.lds ; \
 		cat part$${c}_sec1.ld >> $(POK_PATH)/misc/ldscripts/$(ARCH)/$(BSP)/kernel_partitions.lds ; \
 		$(ECHO) "}" >> $(POK_PATH)/misc/ldscripts/$(ARCH)/$(BSP)/kernel_partitions.lds ; \
-		$(ECHO) $${data_address} >> $(POK_PATH)/misc/ldscripts/$(ARCH)/$(BSP)/kernel_partitions.lds ; \
+		$(ECHO) $${data_address_string} >> $(POK_PATH)/misc/ldscripts/$(ARCH)/$(BSP)/kernel_partitions.lds ; \
 		$(ECHO) $${data_segment} >> $(POK_PATH)/misc/ldscripts/$(ARCH)/$(BSP)/kernel_partitions.lds ; \
 		cat part$${c}_sec2.ld >> $(POK_PATH)/misc/ldscripts/$(ARCH)/$(BSP)/kernel_partitions.lds ; \
 		$(ECHO) "}" >> $(POK_PATH)/misc/ldscripts/$(ARCH)/$(BSP)/kernel_partitions.lds ; \
+		rm part$${c}_sec1.ld ; \
+		rm part$${c}_sec2.ld ; \
 		c=`$(ECHO) $${c}+1 | bc` ; \
 	done
 	cat $(POK_PATH)/misc/ldscripts/$(ARCH)/$(BSP)/kernel_preamble.lds $(POK_PATH)/misc/ldscripts/$(ARCH)/$(BSP)/kernel_partitions.lds $(POK_PATH)/misc/ldscripts/$(ARCH)/$(BSP)/kernel_postscript.lds > $(POK_PATH)/misc/ldscripts/$(ARCH)/$(BSP)/kernel.lds ; 
@@ -108,9 +114,10 @@ endif
 partitions-lds:
 ifeq ($(ARCH), patmos)
 	$(ECHO) "Creating partition linker scripts"
-	c=1;for v in $(PARTITIONS); do \
-		text_address=`$(ECHO) $${c}*20000 | bc`; \
-		data_address=`$(ECHO) $${c}*40000 | bc`; \
+	c=1;last_text=44000;for v in $(PARTITIONS); do \
+		text_address=`$(ECHO) $${last_text} | bc`; \
+		data_address=`$(ECHO) $${text_address}+20000 | bc`; \
+		last_text=`$(ECHO) $${data_address}+1000 | bc`; \
 		$(ECHO) "Base text address 0x" $$text_address ": in ./part"$$c"/partition_"$$c".lds" ; \
 		$(ECHO) "Base data address 0x" $$data_address ": in ./part"$$c"/partition_"$$c".lds" ; \
 		cp $(POK_PATH)/misc/ldscripts/$(ARCH)/$(BSP)/partition_template.lds ./part$$c/partition_$${c}_t.lds ; \

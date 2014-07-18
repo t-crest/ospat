@@ -69,7 +69,7 @@
 
 #ifdef POK_ARCH_PATMOS
 
-  #define POK_PARTITION_ENTRIES {0x204c4}
+  #define POK_PARTITION_ENTRIES {0x444c4}
 
 #endif
 
