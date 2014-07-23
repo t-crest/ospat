@@ -42,7 +42,7 @@ cd $POK_PATH
 mv examples/${EXAMPLE}/generated-code/cpu/pok.elf build-${EXAMPLE}/kernel.elf
 
 # Move to deploy directory
-cd build-${EXAMPLE}
+#cd build-${EXAMPLE}
 
 # Stream partition to the UART file
 #./elf2uart part1.elf --output=part1.sec
