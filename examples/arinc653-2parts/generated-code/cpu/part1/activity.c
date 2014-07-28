@@ -1,7 +1,9 @@
 #include <arinc653/types.h>
 #include <arinc653/time.h>
 #include "deployment.h"
-
+#ifdef POK_ARCH_PATMOS
+	#include <stdio.h>
+#endif
 
 
 void* thr1_1_job ()
