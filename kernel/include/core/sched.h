@@ -113,6 +113,7 @@ void pok_sched_activate_error_thread (void);
 #ifdef POK_NEEDS_SCHED_O1
 unsigned int masks[POK_CONFIG_SCHEDULING_MAJOR_FRAME][POK_STATE_T_NR_ELEMENTS]; //32-bits mask for each partition
 uint64_t start_of_MAF;
+uint64_t start_of_MAF_stub;
 extern uint32_t pok_thread_ids_to_pos_map[POK_CONFIG_NB_THREADS];
 // inclusions from timer.c
 extern unsigned int time_inter;

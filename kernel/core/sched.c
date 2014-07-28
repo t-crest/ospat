@@ -59,6 +59,7 @@
 #endif
 
 #include <dependencies.h>
+	#include <stdio.h>
 
 #ifdef POK_ARCH_PATMOS
  #ifdef POK_NEEDS_DEBUG
@@ -113,6 +114,7 @@ uint32_t prev_current_thread;
 pok_sched_t pok_global_sched;
 uint64_t pok_sched_next_deadline;
 uint64_t pok_sched_next_major_frame;
+uint64_t pok_sched_next_major_frame_stub;
 int pok_sched_current_slot = 0; /* Which slot are we executing at this time ?*/
 uint32_t current_thread = KERNEL_THREAD;
 
@@ -396,19 +398,23 @@ uint8_t pok_sched_get_priority_max (const pok_sched_t sched_type)
 /* Elects next partition to be executed */
 pok_partition_t*	pok_elect_partition(uint64_t time)
 {
-	pok_bool_t switched = FALSE;
 	uint64_t now = time;
 	/* End of the curently executing partition slot */
 
-	pok_sched_current_slot = (pok_sched_current_slot + 1) % POK_CONFIG_SCHEDULING_NBSLOTS;
+	int pok_sched_current_slot_tmp = pok_sched_current_slot + 1;
+	if (pok_sched_current_slot_tmp < POK_CONFIG_SCHEDULING_NBSLOTS) {
+		pok_sched_current_slot = pok_sched_current_slot_tmp;
+	} else {
+		pok_sched_current_slot = 0;
+	}
+	//pok_sched_current_slot = (pok_sched_current_slot + 1) % POK_CONFIG_SCHEDULING_NBSLOTS;
 
 	if (pok_sched_next_major_frame <= now)
 	{
-		switched = TRUE;
-		pok_sched_next_major_frame = pok_sched_next_major_frame + POK_CONFIG_SCHEDULING_MAJOR_FRAME;
  #ifdef POK_NEEDS_SCHED_O1
 		start_of_MAF = now;
  #endif
+		
  #ifdef POK_NEEDS_DEBUG_O1
 		printf("[DEBUG_O1]\t pok_sched_next_major_frame %d\n", pok_sched_next_major_frame);
  #endif
@@ -417,10 +423,17 @@ pok_partition_t*	pok_elect_partition(uint64_t time)
 		// Convey data from SOURCE ports to DESTINATION ports
 		pok_port_flushall();
  #endif
-  	}
+ 
+  	} else {
+
+ #ifdef POK_NEEDS_SCHED_O1
+		start_of_MAF_stub = now;
+ #endif
+  }
 		
 	/* Sets the next partition switch instant */
 	pok_sched_next_deadline = pok_sched_next_deadline + pok_sched_slots[pok_sched_current_slot];
+
 
  #ifdef POK_NEEDS_DEBUG
 	printf("[DEBUG]\t Slot number %d\n", pok_sched_current_slot); 
@@ -435,6 +448,8 @@ pok_partition_t*	pok_elect_partition(uint64_t time)
 
 	// set the current activation time of the partition -- used to calculate the process first release point
 	pok_partitions[pok_current_partition].activation = now; // i.e. POK_GETTICK();
+
+	
  #ifdef POK_NEEDS_DEBUG_O1
 	printf("[DEBUG_O1]\t Slot: %d, Current partition: %d\n", pok_sched_current_slot,pok_current_partition);
 	printf("[DEBUG_O1]\t Setting partition %d activation to ", pok_current_partition);print_long(now);printf("\n");
@@ -447,6 +462,7 @@ pok_partition_t*	pok_elect_partition(uint64_t time)
 		
  
  #ifdef POK_NEEDS_SCHED_O1
+	// COMMENTED OUT TO CHECK WHY PARTITION SWITCH ET VARIATE
 	// Reorder asynch events of the partition and activate those that have timed out
 	pok_sched_reorder_asynch_list();
 	pok_sched_service_asynch_events();
@@ -500,6 +516,7 @@ uint32_t pok_elect_thread (pok_partition_t* current_partition, uint64_t now)
 // ********************* O1 SCHEDULER ***********************************************
  #ifdef POK_NEEDS_SCHED_O1
 			moment = now - start_of_MAF + 1;
+			start_of_MAF_stub = 0;
   #ifdef POK_NEEDS_DEBUG_O1
 			printf("[DEBUG_O1]\t Thread switch!\n");
 			printf("[DEBUG_O1]\t Now: "); print_long(now); printf("\n");
@@ -611,7 +628,7 @@ void pok_sched()
 	pok_arch_cache_enable();
 #endif
 
-	/* manage POSTWRITE */
+	/// manage POSTWRITE 
 	if (next_subslot_postwrite)
 	{
    #ifdef POK_NEEDS_DEBUG_O1
@@ -755,7 +772,7 @@ void pok_sched_partition_switch (const uint32_t elected_id)
 	current_sp = &POK_CURRENT_THREAD.sp;
 	new_sp = pok_threads[elected_id].sp;
 #endif
-
+/*
 	if (POK_SCHED_CURRENT_THREAD == elected_id)
 	{	
 #ifdef POK_NEEDS_DEBUG
@@ -771,7 +788,7 @@ void pok_sched_partition_switch (const uint32_t elected_id)
 		return;
 	}
 					
-	/* FIXME : current debug session about exceptions-handled */
+	// FIXME : current debug session about exceptions-handled 
 #ifdef POK_NEEDS_DEBUG
 	#ifndef POK_ARCH_PATMOS
 	printf("[DEBUG]\t Switch from thread %d, sp: 0x%x\n", POK_SCHED_CURRENT_THREAD, current_sp);
@@ -787,6 +804,7 @@ void pok_sched_partition_switch (const uint32_t elected_id)
 	// Switch from one partition to another	
 	pok_space_switch(POK_CURRENT_THREAD.partition, pok_threads[elected_id].partition);
 #endif
+*/
 	// Update current thread id now 
 	current_thread = elected_id;
 #ifdef POK_ARCH_PATMOS
